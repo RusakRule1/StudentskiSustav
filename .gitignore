@@ -1,0 +1,13 @@
+target/
+
+bazaPodataka/*.db
+bazaPodataka/*.trace.db
+bazaPodataka/*.mv.db
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+
+.mvn
