@@ -9,6 +9,14 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <class>projekt.model.Korisnik</class>
+        <class>projekt.model.Student</class>
+        <class>projekt.model.Profesor</class>
+        <class>projekt.model.Admin</class>
+        <class>projekt.model.Ocjena</class>
+        <class>projekt.model.PredajaZadatka</class>
+        <class>projekt.model.Predmet</class>
+        <class>projekt.model.Upis</class>
+        <class>projekt.model.Zadatak</class>
 
         <properties>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:tcp://localhost:9092/./studentski_sustav"/>

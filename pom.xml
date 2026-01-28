@@ -21,6 +21,7 @@
         <jakarta.transaction.version>2.0.1</jakarta.transaction.version>
         <xml.bind.version>4.0.4</xml.bind.version>
         <jax-runtime.version>4.0.6</jax-runtime.version>
+        <ini4j.version>0.5.4</ini4j.version>
     </properties>
 
     <dependencies>
@@ -63,6 +64,11 @@
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <version>${jax-runtime.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ini4j</groupId>
+            <artifactId>ini4j</artifactId>
+            <version>${ini4j.version}</version>
         </dependency>
     </dependencies>
 

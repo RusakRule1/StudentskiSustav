@@ -1,0 +1,114 @@
+.pozadina-gradijent {
+    -fx-background-color: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+}
+
+.pozadina-bijela {
+    -fx-background-color: #ffffff;
+}
+
+.pozadina-svijetla {
+    -fx-background-color: #ecf0f1;
+}
+
+.pozadina-tamna {
+    -fx-background-color: #2c3e50;
+}
+
+.naslov-tekst {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+}
+
+.podnaslov-tekst {
+    -fx-font-size: 18px;
+    -fx-font-weight: normal;
+    -fx-fill: #7f8c8d;
+}
+
+.sekcija-naslov {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+}
+
+.tijelo-tekst {
+    -fx-font-size: 14px;
+    -fx-fill: #34495e;
+}
+
+.razmak-mali {
+    -fx-spacing: 10px;
+}
+
+.razmak-srednji {
+    -fx-spacing: 20px;
+}
+
+.razmak-veliki {
+    -fx-spacing: 30px;
+}
+
+.padding-mali {
+    -fx-padding: 10px;
+}
+
+.padding-srednji {
+    -fx-padding: 20px;
+}
+
+.padding-veliki {
+    -fx-padding: 30px;
+}
+
+.sredina {
+    -fx-alignment: center;
+}
+
+.sredina-lijevo {
+    -fx-alignment: center-left;
+}
+
+.sredina-desno {
+    -fx-alignment: center-right;
+}
+
+.vrh-sredina {
+    -fx-alignment: top-center;
+}
+
+.sjena-mala {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.sjena-srednja {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3);
+}
+
+.sjena-velika {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 15, 0, 0, 5);
+}
+
+.obrub-svijetao {
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+}
+
+.obrub-primaran {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+}
+
+.obrub-opasan {
+    -fx-border-color: #e74c3c;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+}
+
+.obrub-uspjesan {
+    -fx-border-color: #2ecc71;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+}

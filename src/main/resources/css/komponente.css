@@ -1,0 +1,203 @@
+/* ========== GUMBI ========== */
+.gumb {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 30px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+.gumb-primaran {
+    -fx-background-color: #3498db;
+    -fx-text-fill: #ffffff;
+}
+
+.gumb-primaran:hover {
+    -fx-background-color: #2980b9;
+}
+
+.gumb-sekundaran {
+    -fx-background-color: #2ecc71;
+    -fx-text-fill: #ffffff;
+}
+
+.gumb-sekundaran:hover {
+    -fx-background-color: #27ae60;
+}
+
+.gumb-opasan {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: #ffffff;
+}
+
+.gumb-opasan:hover {
+    -fx-background-color: #c0392b;
+}
+
+.gumb-upozoravajuci {
+    -fx-background-color: #f39c12;
+    -fx-text-fill: #ffffff;
+}
+
+.gumb-upozoravajuci:hover {
+    -fx-background-color: #e67e22;
+}
+
+.gumb-onemogucen {
+    -fx-background-color: #95a5a6;
+    -fx-text-fill: #ffffff;
+    -fx-cursor: default;
+}
+
+/* ========== POLJA ZA UNOS ========== */
+.polje-teksta, .polje-lozinke {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1px;
+    -fx-pref-width: 250px;
+}
+
+.polje-teksta:focused, .polje-lozinke:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2px;
+}
+
+.polje-teksta-greska, .polje-lozinke-greska {
+    -fx-border-color: #e74c3c !important;
+    -fx-border-width: 2px !important;
+}
+
+.polje-teksta-uspjesno, .polje-lozinke-uspjesno {
+    -fx-border-color: #2ecc71 !important;
+    -fx-border-width: 2px !important;
+}
+
+/* ========== LABELE ========== */
+.labela {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 14px;
+}
+
+.labela-podebljana {
+    -fx-font-weight: bold;
+}
+
+.labela-naslov {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.labela-greska {
+    -fx-text-fill: #e74c3c;
+    -fx-font-weight: bold;
+}
+
+.labela-uspjesno {
+    -fx-text-fill: #2ecc71;
+    -fx-font-weight: bold;
+}
+
+.labela-informacija {
+    -fx-text-fill: #3498db;
+}
+
+.labela-prigušena {
+    -fx-text-fill: #95a5a6;
+}
+
+/* ========== CHECKBOXOVI ========== */
+.checkbox {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 13px;
+}
+
+.checkbox .box {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 3px;
+}
+
+.checkbox:selected .mark {
+    -fx-background-color: #3498db;
+}
+
+/* ========== HIPERVEZE ========== */
+.hiperveza {
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.hiperveza-aktivna {
+    -fx-text-fill: #3498db;
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+.hiperveza-neaktivna {
+    -fx-text-fill: #95a5a6;
+    -fx-underline: false;
+}
+
+.hiperveza:hover {
+    -fx-text-fill: #2980b9;
+}
+
+/* ========== PANELI/KARTICE ========== */
+.kartica {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 25px;
+}
+
+.kartica-sjena {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+
+/* ========== MREŽA ZA FORME ========== */
+.mreza-forma {
+    -fx-hgap: 15px;
+    -fx-vgap: 15px;
+    -fx-alignment: center;
+}
+
+/* ========== PORUKE ========== */
+.poruka-greska {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+    -fx-max-width: 300px;
+}
+
+.poruka-uspjesno {
+    -fx-text-fill: #2ecc71;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+    -fx-max-width: 300px;
+}
+
+/* ========== RAZDVAJAČI ========== */
+.razdvajac-vodoravni {
+    -fx-background-color: #bdc3c7;
+    -fx-pref-height: 1px;
+    -fx-padding: 5px 0;
+}
+
+.razdvajac-okomit {
+    -fx-background-color: #bdc3c7;
+    -fx-pref-width: 1px;
+    -fx-padding: 0 5px;
+}

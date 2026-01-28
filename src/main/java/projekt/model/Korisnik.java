@@ -7,27 +7,28 @@ import java.util.Objects;
 @Entity
 @Table(name = "korisnik")
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "uloga", discriminatorType = DiscriminatorType.STRING)
 public class Korisnik {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private Integer id;
 
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false, length = 255)
     private String email;
 
-    @Column(name = "lozinka_hash", nullable = false)
+    @Column(name = "lozinka_hash", nullable = false, length = 255)
     private String lozinkaHash;
 
-    @Column(name = "ime", nullable = false)
+    @Column(name = "ime", nullable = false, length = 100)
     private String ime;
 
-    @Column(name = "prezime", nullable = false)
+    @Column(name = "prezime", nullable = false, length = 100)
     private String prezime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "uloga", nullable = false)
+    @Column(name = "uloga", nullable = false, length = 50, insertable = false, updatable = false)
     private Uloga uloga;
 
     public Korisnik() {
@@ -41,11 +42,11 @@ public class Korisnik {
         this.uloga = uloga;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
