@@ -1,6 +1,9 @@
 package projekt.model;
 
 import jakarta.persistence.*;
+import projekt.util.AES;
+import projekt.util.Hash;
+import projekt.util.RSA;
 
 import java.util.Objects;
 
@@ -21,11 +24,11 @@ public class Korisnik {
     @Column(name = "lozinka_hash", nullable = false, length = 255)
     private String lozinkaHash;
 
-    @Column(name = "ime", nullable = false, length = 100)
-    private String ime;
+    @Column(name = "sifrirano_ime", nullable = false, length = 500)
+    private String sifriranoIme;
 
-    @Column(name = "prezime", nullable = false, length = 100)
-    private String prezime;
+    @Column(name = "sifrirano_prezime", nullable = false, length = 500)
+    private String sifriranoPrezime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "uloga", nullable = false, length = 50, insertable = false, updatable = false)
@@ -34,11 +37,11 @@ public class Korisnik {
     public Korisnik() {
     }
 
-    public Korisnik(String email, String lozinkaHash, String ime, String prezime, Uloga uloga) {
+    public Korisnik(String email, String lozinka, String ime, String prezime, Uloga uloga) {
         this.email = email;
-        this.lozinkaHash = lozinkaHash;
-        this.ime = ime;
-        this.prezime = prezime;
+        this.lozinkaHash = Hash.hashirajLozinku(lozinka, email);
+        this.sifriranoIme = AES.sifriraj(ime);
+        this.sifriranoPrezime = RSA.getInstance().sifriraj(prezime);
         this.uloga = uloga;
     }
 
@@ -67,19 +70,25 @@ public class Korisnik {
     }
 
     public String getIme() {
-        return ime;
+        if (sifriranoIme == null || sifriranoIme.trim().isEmpty()) {
+            return sifriranoIme;
+        }
+        return AES.desifriraj(sifriranoIme);
     }
 
     public void setIme(String ime) {
-        this.ime = ime;
+        this.sifriranoIme = ime;
     }
 
     public String getPrezime() {
-        return prezime;
+        if (sifriranoPrezime == null || sifriranoPrezime.trim().isEmpty()) {
+            return sifriranoPrezime;
+        }
+        return RSA.getInstance().desifriraj(sifriranoPrezime);
     }
 
     public void setPrezime(String prezime) {
-        this.prezime = prezime;
+        this.sifriranoPrezime = prezime;
     }
 
     public Uloga getUloga() {
@@ -88,10 +97,6 @@ public class Korisnik {
 
     public void setUloga(Uloga uloga) {
         this.uloga = uloga;
-    }
-
-    public String vratiPunoIme() {
-        return ime + " " + prezime;
     }
 
     @Override
@@ -112,8 +117,8 @@ public class Korisnik {
         return "Korisnik{" +
                 "id=" + id +
                 ", email='" + email + '\'' +
-                ", ime='" + ime + '\'' +
-                ", prezime='" + prezime + '\'' +
+                ", ime='" + getIme() + '\'' +
+                ", prezime='" + getPrezime() + '\'' +
                 ", uloga=" + uloga +
                 '}';
     }

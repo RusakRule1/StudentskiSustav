@@ -23,8 +23,8 @@ public class Profesor extends Korisnik {
     public Profesor() {
     }
 
-    public Profesor(String email, String lozinkaHash, String ime, String prezime, String titula) {
-        super(email, lozinkaHash, ime, prezime, Uloga.PROFESOR);
+    public Profesor(String email, String lozinka, String ime, String prezime, String titula) {
+        super(email, lozinka, ime, prezime, Uloga.PROFESOR);
         this.titula = titula;
     }
 
@@ -53,7 +53,7 @@ public class Profesor extends Korisnik {
     }
 
     public void dodajPredmet(Predmet predmet) {
-        predmeti.add(predmet);
+        this.predmeti.add(predmet);
         predmet.setProfesor(this);
     }
 

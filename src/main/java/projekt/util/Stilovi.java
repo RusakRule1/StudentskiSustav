@@ -1,6 +1,6 @@
 package projekt.util;
 
-public class StiloviUtil {
+public class Stilovi {
 
     public static final String POZADINA_GRADIJENT = "pozadina-gradijent";
     public static final String POZADINA_BIJELA = "pozadina-bijela";

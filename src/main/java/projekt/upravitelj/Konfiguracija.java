@@ -1,10 +1,12 @@
-package projekt.util;
+package projekt.upravitelj;
 
 import org.ini4j.Ini;
 import org.ini4j.IniPreferences;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.prefs.Preferences;
 
@@ -13,25 +15,29 @@ public class Konfiguracija {
     private static Konfiguracija instanca;
     private static final String NAZIV_APLIKACIJE = "StudentskiSustav";
 
-    private static final String INI_DATOTEKA = Paths.get(System.getProperty("user.home"), ".studentski-sustav", "postavke.ini").toString();
+    private static final Path DIREKTORIJ_KONFIGURACIJE = Paths.get(
+            System.getProperty("user.home"),
+            ".studentski-sustav"
+    );
+    private static final Path INI_PUTANJA = DIREKTORIJ_KONFIGURACIJE.resolve("postavke.ini");
     private static final String INI_SEKCIJA = "Podesavanja";
-
-    private Preferences windowsRegistar;
-
-    private String jezik;
-    private int visinaProzora;
-    private int sirinaProzora;
-    private String zadnjiKorisnik;
-    private boolean zapamtiMe;
 
     private static final String PODRAZUMIJEVANI_JEZIK = "HR";
     private static final int PODRAZUMIJEVANA_SIRINA = 800;
     private static final int PODRAZUMIJEVANA_VISINA = 600;
 
+    private final Preferences windowsRegistar;
+
+    private String jezik;
+    private int visinaProzora;
+    private int sirinaProzora;
+
+    private String zadnjiKorisnik;
+    private boolean zapamtiMe;
+
     private Konfiguracija() {
-        kreirajDirektorijZaINI();
-        ucitajIzINI();
-        ucitajIzRegistra();
+        this.windowsRegistar = Preferences.userRoot().node(NAZIV_APLIKACIJE);
+        inicijaliziraj();
     }
 
     public static synchronized Konfiguracija getInstanca() {
@@ -41,37 +47,43 @@ public class Konfiguracija {
         return instanca;
     }
 
-    private void kreirajDirektorijZaINI() {
-        try {
-            File iniDatoteka = new File(INI_DATOTEKA);
-            File direktorij = iniDatoteka.getParentFile();
+    private void inicijaliziraj() {
+        osiguraPostojanjeDirektorija();
+        ucitajPostavke();
+    }
 
-            if (direktorij != null && !direktorij.exists()) {
-                boolean kreirano = direktorij.mkdirs();
-                if (kreirano) {
-                    System.out.println("Kreiran direktorij: " + direktorij.getAbsolutePath());
-                } else {
-                    System.err.println("Nije moguće kreirati direktorij: " + direktorij.getAbsolutePath());
-                }
+    private void osiguraPostojanjeDirektorija() {
+        try {
+            if (!Files.exists(DIREKTORIJ_KONFIGURACIJE)) {
+                Files.createDirectories(DIREKTORIJ_KONFIGURACIJE);
+                System.out.println("Kreiran direktorij: " + DIREKTORIJ_KONFIGURACIJE);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("Greška pri kreiranju direktorija: " + e.getMessage());
         }
     }
 
+    private void ucitajPostavke() {
+        ucitajIzINI();
+        ucitajIzRegistra();
+    }
+
     private void ucitajIzINI() {
-        File iniDatoteka = new File(INI_DATOTEKA);
+        File iniDatoteka = INI_PUTANJA.toFile();
+
+        if (!iniDatoteka.exists()) {
+            postaviPodrazumijevaneINI();
+            spremiUINI();
+            return;
+        }
+
         try {
-            if (iniDatoteka.exists()) {
-                Ini ini = new Ini(iniDatoteka);
-                IniPreferences prefs = new IniPreferences(ini);
-                jezik = prefs.node(INI_SEKCIJA).get("jezik", PODRAZUMIJEVANI_JEZIK);
-                sirinaProzora = prefs.node(INI_SEKCIJA).getInt("sirina", PODRAZUMIJEVANA_SIRINA);
-                visinaProzora = prefs.node(INI_SEKCIJA).getInt("visina", PODRAZUMIJEVANA_VISINA);
-            } else {
-                postaviPodrazumijevaneINI();
-                spremiUINI();
-            }
+            Ini ini = new Ini(iniDatoteka);
+            IniPreferences prefs = new IniPreferences(ini);
+
+            jezik = prefs.node(INI_SEKCIJA).get("jezik", PODRAZUMIJEVANI_JEZIK);
+            sirinaProzora = prefs.node(INI_SEKCIJA).getInt("sirina", PODRAZUMIJEVANA_SIRINA);
+            visinaProzora = prefs.node(INI_SEKCIJA).getInt("visina", PODRAZUMIJEVANA_VISINA);
         } catch (IOException e) {
             System.err.println("Greška pri učitavanju INI datoteke: " + e.getMessage());
             postaviPodrazumijevaneINI();
@@ -84,36 +96,39 @@ public class Konfiguracija {
         visinaProzora = PODRAZUMIJEVANA_VISINA;
     }
 
-    private void spremiUINI() {
+    private boolean spremiUINI() {
         try {
             Ini ini = new Ini();
             ini.put(INI_SEKCIJA, "jezik", jezik);
             ini.put(INI_SEKCIJA, "sirina", String.valueOf(sirinaProzora));
             ini.put(INI_SEKCIJA, "visina", String.valueOf(visinaProzora));
-            ini.store(new File(INI_DATOTEKA));
+            ini.store(INI_PUTANJA.toFile());
+            return true;
         } catch (IOException e) {
             System.err.println("Greška pri spremanju INI datoteke: " + e.getMessage());
+            return false;
         }
     }
 
     private void ucitajIzRegistra() {
         try {
-            windowsRegistar = Preferences.userRoot().node(NAZIV_APLIKACIJE);
             zadnjiKorisnik = windowsRegistar.get("zadnjiKorisnik", "");
             zapamtiMe = windowsRegistar.getBoolean("zapamtiMe", false);
         } catch (Exception e) {
-            System.err.println("Greška pri pristupu registru: " + e.getMessage());
+            System.err.println("Greška pri učitavanju iz registra: " + e.getMessage());
             postaviPodrazumijevaneRegistar();
         }
     }
 
-    private void spremiURegistar() {
+    private boolean spremiURegistar() {
         try {
             windowsRegistar.put("zadnjiKorisnik", zadnjiKorisnik);
             windowsRegistar.putBoolean("zapamtiMe", zapamtiMe);
             windowsRegistar.flush();
+            return true;
         } catch (Exception e) {
             System.err.println("Greška pri spremanju u registar: " + e.getMessage());
+            return false;
         }
     }
 
@@ -143,12 +158,15 @@ public class Konfiguracija {
     }
 
     public void setJezik(String jezik) {
+        if (jezik == null || jezik.trim().isEmpty()) {
+            throw new IllegalArgumentException("Jezik ne može biti null ili prazan");
+        }
         this.jezik = jezik;
         spremiUINI();
     }
 
     public void setZadnjiKorisnik(String korisnik) {
-        this.zadnjiKorisnik = korisnik;
+        this.zadnjiKorisnik = korisnik != null ? korisnik : "";
         spremiURegistar();
     }
 
@@ -156,9 +174,10 @@ public class Konfiguracija {
         this.zapamtiMe = zapamtiMe;
         spremiURegistar();
     }
-    
-    public void spremiSvePostavke() {
-        spremiUINI();
-        spremiURegistar();
+
+    public boolean spremiSvePostavke() {
+        boolean iniUspjeh = spremiUINI();
+        boolean registarUspjeh = spremiURegistar();
+        return iniUspjeh && registarUspjeh;
     }
 }

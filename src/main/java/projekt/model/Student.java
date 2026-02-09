@@ -23,8 +23,8 @@ public class Student extends Korisnik {
     public Student() {
     }
 
-    public Student(String email, String lozinkaHash, String ime, String prezime, String jmbag) {
-        super(email, lozinkaHash, ime, prezime, Uloga.STUDENT);
+    public Student(String email, String lozinka, String ime, String prezime, String jmbag) {
+        super(email, lozinka, ime, prezime, Uloga.STUDENT);
         this.jmbag = jmbag;
     }
 

@@ -134,4 +134,9 @@ public class Predmet {
         zadaci.add(zadatak);
         zadatak.setPredmet(this);
     }
+
+    @Override
+    public String toString() {
+        return naziv;
+    }
 }

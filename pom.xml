@@ -22,6 +22,7 @@
         <xml.bind.version>4.0.4</xml.bind.version>
         <jax-runtime.version>4.0.6</jax-runtime.version>
         <ini4j.version>0.5.4</ini4j.version>
+        <gson.version>2.13.2</gson.version>
     </properties>
 
     <dependencies>
@@ -70,6 +71,11 @@
             <artifactId>ini4j</artifactId>
             <version>${ini4j.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -89,6 +95,9 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>projekt.Main</mainClass>
+                    <options>
+                        <option>-Djava.library.path=lib</option>
+                    </options>
                 </configuration>
             </plugin>
         </plugins>

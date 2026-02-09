@@ -14,8 +14,8 @@ public class Admin extends Korisnik {
     public Admin() {
     }
 
-    public Admin(String email, String lozinkaHash, String ime, String prezime, String ovlasti) {
-        super(email, lozinkaHash, ime, prezime, Uloga.ADMIN);
+    public Admin(String email, String lozinka, String ime, String prezime, String ovlasti) {
+        super(email, lozinka, ime, prezime, Uloga.ADMIN);
         this.ovlasti = ovlasti;
     }
 
