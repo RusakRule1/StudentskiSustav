@@ -1,7 +1,5 @@
 package projekt.model;
 
-import java.util.stream.Stream;
-
 public enum Jezik {
     HR("HR"),
     EN("EN");
@@ -14,12 +12,5 @@ public enum Jezik {
 
     public String getKod() {
         return kod;
-    }
-
-    public static Jezik fromKod(String kod) {
-        return Stream.of(values())
-                .filter(j -> j.getKod().equals(kod))
-                .findFirst()
-                .orElse(HR);
     }
 }

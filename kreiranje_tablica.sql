@@ -186,9 +186,9 @@ INSERT INTO admin (korisnik_id, ovlasti) VALUES
 (41, 'FULL_ACCESS: Korisnici, Studenti, Profesori, Predmeti, Ocjene');
 
 INSERT INTO predmet (naziv, sifra, ects_bodovi, profesor_id, semestar, godina_izvodenja) VALUES
-('Matematika 1',        'MAT101', 6,  NULL, 'ZIMSKI', 1),
-('Programiranje 1',     'PROG1',  7,  NULL, 'ZIMSKI', 1),
-('Osnove baza podataka','BP101',  6,  NULL, 'LJETNI', 2),
+('Matematika 1',        'MAT101', 6,  31, 'ZIMSKI', 1),
+('Programiranje 1',     'PROG1',  7,  31, 'ZIMSKI', 1),
+('Osnove baza podataka','BP101',  6,  31, 'LJETNI', 2),
 ('Algoritmi i strukture podataka', 'ASP201', 8, NULL, 'LJETNI', 2),
 ('Operacijski sustavi', 'OS301',  6,  NULL, 'ZIMSKI', 3),
 ('Računalne mreže',     'RM302',  5,  NULL, 'LJETNI', 3),

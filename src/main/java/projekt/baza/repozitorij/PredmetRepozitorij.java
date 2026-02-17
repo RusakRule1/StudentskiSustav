@@ -1,6 +1,7 @@
 package projekt.baza.repozitorij;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import projekt.baza.dao.OpciDAO;
 import projekt.model.Predmet;
 import projekt.upravitelj.UpraviteljBaze;
@@ -26,6 +27,21 @@ public class PredmetRepozitorij {
                     Predmet.class
             ).getResultList();
             return lista;
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Predmet> dohvatiPredmeteProfesora(Integer profesorId) {
+        EntityManager em = UpraviteljBaze.dohvatiEntityManager();
+        try {
+            String jpql = "SELECT p FROM Predmet p " +
+                    "WHERE p.profesor.id = :profesorId";
+
+            TypedQuery<Predmet> query = em.createQuery(jpql, Predmet.class);
+            query.setParameter("profesorId", profesorId);
+
+            return query.getResultList();
         } finally {
             em.close();
         }

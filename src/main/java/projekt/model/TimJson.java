@@ -49,20 +49,6 @@ public class TimJson {
         this.clanovi = clanovi;
     }
 
-    public void dodajClana(StudentJson student) {
-        if (!clanovi.contains(student)) {
-            clanovi.add(student);
-        }
-    }
-
-    public void ukloniClana(StudentJson student) {
-        clanovi.remove(student);
-    }
-
-    public boolean sadrziStudenta(String jmbag) {
-        return clanovi.stream().anyMatch(s -> s.getJmbag().equals(jmbag));
-    }
-
     public int getBrojClanova() {
         return clanovi != null ? clanovi.size() : 0;
     }

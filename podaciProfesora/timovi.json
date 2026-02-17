@@ -4,20 +4,17 @@
     "naziv": "Tim Alfa",
     "clanovi": [
       {
-        "jmbag": "0036123460",
-        "email": "luka.juric@student.unizg.hr",
+        "jmbag": "0036001005",
         "ime": "Luka",
         "prezime": "Jurić"
       },
       {
-        "jmbag": "0036123458",
-        "email": "marko.babic@student.unizg.hr",
+        "jmbag": "0036001003",
         "ime": "Marko",
         "prezime": "Babić"
       },
       {
-        "jmbag": "0036123463",
-        "email": "sara.knezevic@student.unizg.hr",
+        "jmbag": "0036001008",
         "ime": "Sara",
         "prezime": "Knežević"
       }
@@ -28,28 +25,14 @@
     "naziv": "Tim Gama",
     "clanovi": [
       {
-        "jmbag": "0036123461",
-        "email": "maja.pavic@student.unizg.hr",
+        "jmbag": "0036001006",
         "ime": "Maja",
         "prezime": "Pavić"
       },
       {
-        "jmbag": "0036123462",
-        "email": "tomislav.maric@student.unizg.hr",
+        "jmbag": "0036001007",
         "ime": "Tomislav",
         "prezime": "Marić"
-      }
-    ]
-  },
-  {
-    "id": "35c5087d-669a-47fc-8ff0-f1b79f40c70c",
-    "naziv": "dasd",
-    "clanovi": [
-      {
-        "jmbag": "0036123456",
-        "email": "ivan.horvat@student.unizg.hr",
-        "ime": "Ivan",
-        "prezime": "Horvat"
       }
     ]
   }

@@ -2,16 +2,11 @@ package projekt.model;
 
 public class StudentJson {
     private String jmbag;
-    private String email;
     private String ime;
     private String prezime;
-
-    public StudentJson() {
-    }
-
-    public StudentJson(String jmbag, String email, String ime, String prezime) {
+    
+    public StudentJson(String jmbag, String ime, String prezime) {
         this.jmbag = jmbag;
-        this.email = email;
         this.ime = ime;
         this.prezime = prezime;
     }
@@ -22,14 +17,6 @@ public class StudentJson {
 
     public void setJmbag(String jmbag) {
         this.jmbag = jmbag;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getIme() {
@@ -54,7 +41,7 @@ public class StudentJson {
 
     @Override
     public String toString() {
-        return getImePrezime() + " (" + email + ")";
+        return getImePrezime();
     }
 
     @Override
