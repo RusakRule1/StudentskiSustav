@@ -51,16 +51,30 @@
     -fx-cursor: default;
 }
 
+/* Širine gumbova */
+.gumb-sirina-velika {
+    -fx-pref-width: 300px;
+}
+
+.gumb-sirina-srednja {
+    -fx-pref-width: 250px;
+}
+
+.gumb-sirina-mala {
+    -fx-pref-width: 150px;
+}
+
 /* ========== POLJA ZA UNOS ========== */
 .polje-teksta, .polje-lozinke {
     -fx-font-family: "Arial", sans-serif;
     -fx-font-size: 14px;
     -fx-padding: 10px;
-    -fx-background-radius: 5px;
-    -fx-border-radius: 5px;
+    -fx-background-radius: 3px;
+    -fx-border-radius: 3px;
     -fx-border-color: #bdc3c7;
     -fx-border-width: 1px;
     -fx-pref-width: 250px;
+    -fx-background-color: white;
 }
 
 .polje-teksta:focused, .polje-lozinke:focused {
@@ -68,24 +82,33 @@
     -fx-border-width: 2px;
 }
 
-.polje-teksta-greska, .polje-lozinke-greska {
-    -fx-border-color: #e74c3c !important;
-    -fx-border-width: 2px !important;
+/* Širine polja */
+.polje-sirina-velika {
+    -fx-pref-width: 300px;
 }
 
-.polje-teksta-uspjesno, .polje-lozinke-uspjesno {
-    -fx-border-color: #2ecc71 !important;
-    -fx-border-width: 2px !important;
+.polje-sirina-srednja {
+    -fx-pref-width: 250px;
+}
+
+.polje-sirina-combo {
+    -fx-pref-width: 150px;
+}
+
+.unos-naziv-sirina {
+    -fx-pref-width: 300px;
 }
 
 /* ========== LABELE ========== */
 .labela {
     -fx-font-family: "Arial", sans-serif;
     -fx-font-size: 14px;
+    -fx-text-fill: #000000;
 }
 
 .labela-podebljana {
     -fx-font-weight: bold;
+    -fx-text-fill: #000000;
 }
 
 .labela-naslov {
@@ -177,16 +200,16 @@
     -fx-text-fill: #e74c3c;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-wrap-text: true;
-    -fx-max-width: 300px;
+    -fx-wrap-text: false;
+    -fx-max-width: 600px;
 }
 
 .poruka-uspjesno {
     -fx-text-fill: #2ecc71;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-wrap-text: true;
-    -fx-max-width: 300px;
+    -fx-wrap-text: false;
+    -fx-max-width: 600px;
 }
 
 /* ========== RAZDVAJAČI ========== */
@@ -200,4 +223,133 @@
     -fx-background-color: #bdc3c7;
     -fx-pref-width: 1px;
     -fx-padding: 0 5px;
+}
+
+/* ========== VISINE TABLICA I LISTI ========== */
+.tablica-visina-velika {
+    -fx-pref-height: 300px;
+}
+
+.tablica-visina-srednja {
+    -fx-pref-height: 250px;
+}
+
+.tablica-visina-mala {
+    -fx-pref-height: 150px;
+}
+
+.lista-visina {
+    -fx-pref-height: 300px;
+}
+
+/* ========== KOLONE ZA TABLICE ========== */
+/* Predmeti */
+.kolona-naziv-predmeta .label {
+    -fx-text-fill: #000000;
+    -fx-font-weight: bold;
+    -fx-pref-width: 45%;
+}
+
+.kolona-sifra-predmeta .label {
+    -fx-pref-width: 20%;
+    -fx-text-fill: #000000;
+    -fx-font-weight: bold;
+}
+
+.kolona-ects-predmeta .label{
+    -fx-font-weight: bold;
+    -fx-pref-width: 45%;
+    -fx-pref-width: 15%;
+}
+
+.kolona-semestar-predmeta .label{
+    -fx-font-weight: bold;
+    -fx-pref-width: 45%;
+    -fx-pref-width: 20%;
+}
+
+/* Materijali */
+.kolona-naziv-materijala .label{
+    -fx-font-weight: bold;
+    -fx-pref-width: 45%;
+    -fx-pref-width: 65%;
+}
+
+.kolona-tip-materijala .label{
+    -fx-font-weight: bold;
+    -fx-pref-width: 45%;
+    -fx-pref-width: 35%;
+}
+
+/* Studenti */
+.kolona-ime-studenta .label{
+    -fx-font-weight: bold;
+    -fx-pref-width: 45%;
+    -fx-pref-width: 30%;
+}
+
+.kolona-prezime-studenta .label{
+    -fx-font-weight: bold;
+    -fx-pref-width: 45%;
+    -fx-pref-width: 30%;
+}
+
+.kolona-jmbag-studenta .label{
+    -fx-font-weight: bold;
+    -fx-pref-width: 45%;
+    -fx-pref-width: 40%;
+}
+
+/* Timovi */
+.kolona-naziv-tima .label{
+    -fx-font-weight: bold;
+    -fx-pref-width: 45%;
+    -fx-pref-width: 20%;
+}
+
+.kolona-broj-clanova .label{
+    -fx-font-weight: bold;
+    -fx-pref-width: 45%;
+    -fx-pref-width: 20%;
+}
+
+.kolona-clanovi-tima .label{
+    -fx-font-weight: bold;
+    -fx-pref-width: 45%;
+    -fx-pref-width: 60%;
+}
+
+/* ========== SCROLL PANE ZA SADRŽAJ ========== */
+
+/* Scroll pane koji popunjava preostali prostor */
+.scroll-pane-sadrzaj {
+    -fx-fit-to-width: true;
+    -fx-fit-to-height: true;
+    -fx-pannable: true;
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane-sadrzaj > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Kontejner za scroll pane - centriranje */
+.kontejner-scroll {
+    -fx-alignment: top-center;
+    -fx-padding: 0;
+}
+
+/* Kontejner za forme s ograničenom širinom */
+.kontejner-forme {
+    -fx-max-width: 600px;
+    -fx-pref-width: 600px;
+    -fx-alignment: top-center;
+}
+
+/* Optional: Stil za sadržaj unutar scroll pane-a */
+.sadrzaj-scroll {
+    -fx-background-color: transparent;
 }

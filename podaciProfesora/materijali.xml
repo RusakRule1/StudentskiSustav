@@ -23,10 +23,6 @@
                 <naziv>Java dokumentacija</naziv>
                 <tip>link</tip>
             </materijal>
-            <materijal id="71884e7a-217f-4ea1-a704-895eb09e5fc4">
-                <naziv>sda</naziv>
-                <tip>primjer</tip>
-            </materijal>
         </materijali>
     </predmet>
     <predmet id="3">
@@ -47,19 +43,6 @@
             <materijal id="n4o5p6q7-r8s9-0123-nopq-lm4567890124">
                 <naziv>SQL zadaci za vježbu</naziv>
                 <tip>zadaca</tip>
-            </materijal>
-        </materijali>
-    </predmet>
-    <predmet id="1">
-        <naziv>Matematika 1</naziv>
-        <materijali>
-            <materijal id="018ff8cc-b0d7-4071-ae49-6c9540d8f582">
-                <naziv>sdas</naziv>
-                <tip>video</tip>
-            </materijal>
-            <materijal id="b2afc793-5556-4ba8-98b9-75158e349e86">
-                <naziv>sdas</naziv>
-                <tip>video</tip>
             </materijal>
         </materijali>
     </predmet>

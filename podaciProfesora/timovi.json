@@ -19,21 +19,5 @@
         "prezime": "Knežević"
       }
     ]
-  },
-  {
-    "id": "tim-003",
-    "naziv": "Tim Gama",
-    "clanovi": [
-      {
-        "jmbag": "0036001006",
-        "ime": "Maja",
-        "prezime": "Pavić"
-      },
-      {
-        "jmbag": "0036001007",
-        "ime": "Tomislav",
-        "prezime": "Marić"
-      }
-    ]
   }
 ]

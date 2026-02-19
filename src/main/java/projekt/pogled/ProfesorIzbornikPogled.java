@@ -9,6 +9,7 @@ import projekt.upravitelj.UpraviteljPogleda;
 import projekt.util.Stilovi;
 
 public class ProfesorIzbornikPogled extends OsnovniPogled {
+    
     private static final int RAZMAK_SADRZAJ = 30;
     private static final int PADDING_SADRZAJ = 40;
     private static final int SIRINA_GUMBA = 300;

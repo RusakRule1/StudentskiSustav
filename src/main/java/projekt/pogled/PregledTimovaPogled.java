@@ -1,6 +1,5 @@
 package projekt.pogled;
 
-import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,26 +16,24 @@ import javafx.scene.layout.VBox;
 import projekt.model.TimJson;
 import projekt.servis.TimJsonServis;
 import projekt.upravitelj.UpraviteljPogleda;
+import projekt.util.PorukaHelper;
 import projekt.util.Stilovi;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class PregledTimovaPogled extends OsnovniPogled {
 
     private static final int RAZMAK_SADRZAJ = 20;
     private static final int RAZMAK_KONTROLE = 15;
     private static final int PADDING_SADRZAJ = 20;
-    private static final int SIRINA_LABELE_PORUKE = 600;
     private static final int VISINA_TABLICE = 300;
-    private static final int TRAJANJE_PORUKE_MS = 3000;
 
     private static final double SIRINA_NAZIV_KOLONE = 0.2;
     private static final double SIRINA_BROJ_KOLONE = 0.2;
     private static final double SIRINA_CLANOVI_KOLONE = 0.6;
 
     private final TimJsonServis timServis;
+    private final PorukaHelper poruke = PorukaHelper.kreiraj(prijevod);
 
     private final Label naslov = new Label();
     private final TableView<TimJson> tablicaTimova = new TableView<>();
@@ -51,15 +48,9 @@ public class PregledTimovaPogled extends OsnovniPogled {
     private final Button obrisiTimGumb = new Button();
     private final Button osvjeziGumb = new Button();
 
-    private HBox hboxPoruka;
-    private final Label porukaLabela = new Label();
-    private String trenutnaPoruka = null;
-    private Timer timerPoruke;
-
     public PregledTimovaPogled() {
         super();
         this.timServis = new TimJsonServis();
-        this.hboxPoruka = new HBox(porukaLabela);
     }
 
     @Override
@@ -71,12 +62,11 @@ public class PregledTimovaPogled extends OsnovniPogled {
         konfigurirajNaslov();
         konfigurirajTablicu();
         HBox kontroleBox = kreirajKontrole();
-        konfigurirajPorukaLabelu();
 
         sadrzajBox.getChildren().addAll(
                 naslov,
                 tablicaTimova,
-                hboxPoruka,
+                poruke.kontejner,
                 kontroleBox
         );
 
@@ -172,14 +162,6 @@ public class PregledTimovaPogled extends OsnovniPogled {
         osvjeziGumb.setOnAction(e -> ucitajTimove());
     }
 
-    private void konfigurirajPorukaLabelu() {
-        porukaLabela.getStyleClass().add(Stilovi.PORUKA_GRESKA);
-        porukaLabela.setWrapText(true);
-        porukaLabela.setMaxWidth(SIRINA_LABELE_PORUKE);
-        hboxPoruka.setAlignment(Pos.CENTER);
-        hboxPoruka.setVisible(false);
-    }
-
     private void postaviListenere() {
         postaviListenerZaSelekciju();
     }
@@ -207,7 +189,7 @@ public class PregledTimovaPogled extends OsnovniPogled {
 
         } catch (Exception e) {
             System.err.println("Greška pri učitavanju timova: " + e.getMessage());
-            prikaziGresku("greska_ucitavanje_timova");
+            poruke.prikaziGreskuSTimerom("greska_ucitavanje_timova");
         }
     }
 
@@ -239,59 +221,15 @@ public class PregledTimovaPogled extends OsnovniPogled {
 
             if (uspjeh) {
                 ucitajTimove();
-                prikaziUspjeh("tim_obrisan");
+                poruke.prikaziUspjehSTimerom("tim_obrisan");
             } else {
-                prikaziGresku("greska_tim_neobrisan");
+                poruke.prikaziGreskuSTimerom("greska_tim_neobrisan");
             }
 
         } catch (Exception e) {
             System.err.println("Greška pri brisanju tima: " + e.getMessage());
-            prikaziGresku("greska_tim_neobrisan");
+            poruke.prikaziGreskuSTimerom("greska_tim_neobrisan");
         }
-    }
-
-    private void prikaziGresku(String kljucGreske) {
-        prikaziPoruku(kljucGreske, false);
-    }
-
-    private void prikaziUspjeh(String kljucUspjeha) {
-        prikaziPoruku(kljucUspjeha, true);
-    }
-
-    private void prikaziPoruku(String kljucPoruke, boolean uspjeh) {
-        trenutnaPoruka = kljucPoruke;
-        porukaLabela.setText(prijevod.getPrijevod(kljucPoruke));
-        porukaLabela.getStyleClass().removeAll(
-                Stilovi.PORUKA_GRESKA,
-                Stilovi.PORUKA_USPJESNO
-        );
-        porukaLabela.getStyleClass().add(
-                uspjeh ? Stilovi.PORUKA_USPJESNO : Stilovi.PORUKA_GRESKA
-        );
-
-        hboxPoruka.setVisible(true);
-
-        startTimerZaBrisanjePoruke();
-    }
-
-    private void sakrijPoruku() {
-        porukaLabela.setText("");
-        hboxPoruka.setVisible(false);
-        trenutnaPoruka = null;
-    }
-
-    private void startTimerZaBrisanjePoruke() {
-        if (timerPoruke != null) {
-            timerPoruke.cancel();
-        }
-
-        timerPoruke = new Timer(true);
-        timerPoruke.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> sakrijPoruku());
-            }
-        }, TRAJANJE_PORUKE_MS);
     }
 
     @Override
@@ -299,7 +237,7 @@ public class PregledTimovaPogled extends OsnovniPogled {
         osvjeziNaslov();
         osvjeziTablicu();
         osvjeziGumbe();
-        osvjeziPorukuAkoPostoji();
+        poruke.osvjeziPoruku();
     }
 
     private void osvjeziNaslov() {
@@ -319,11 +257,5 @@ public class PregledTimovaPogled extends OsnovniPogled {
         urediTimGumb.setText(prijevod.getPrijevod("uredi_tim_gumb"));
         obrisiTimGumb.setText(prijevod.getPrijevod("obrisi_tim_gumb"));
         osvjeziGumb.setText(prijevod.getPrijevod("osvjezi_gumb"));
-    }
-
-    private void osvjeziPorukuAkoPostoji() {
-        if (trenutnaPoruka != null) {
-            porukaLabela.setText(prijevod.getPrijevod(trenutnaPoruka));
-        }
     }
 }

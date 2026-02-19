@@ -1,6 +1,5 @@
 package projekt.pogled;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -28,13 +27,8 @@ public abstract class OsnovniPogled {
 
     private static final String CSS_GLOBALNI = "/css/globalni.css";
     private static final String CSS_KOMPONENTE = "/css/komponente.css";
+    private static final String CSS_OSNOVNI = "/css/osnovni.css";
     private static final String SEPARATOR = "|";
-
-    private static final Insets TOP_BAR_PADDING = new Insets(15, 20, 15, 20);
-    private static final Insets INFO_BAR_PADDING = new Insets(5, 20, 5, 20);
-    private static final int TOP_BAR_SPACING = 20;
-    private static final int INFO_BAR_SPACING = 10;
-    private static final int LANGUAGE_BOX_SPACING = 5;
 
     protected Stage prozor;
     protected Konfiguracija konfig;
@@ -82,12 +76,19 @@ public abstract class OsnovniPogled {
     private void dodajTrake() {
         HBox gornjaTraka = kreirajGornjuTraku();
         HBox infoTraka = kreirajInfoTraku();
-        korijen.setTop(new VBox(gornjaTraka, infoTraka));
+
+        VBox trakeKontejner = new VBox(gornjaTraka, infoTraka);
+        trakeKontejner.getStyleClass().addAll(
+                Stilovi.TRAKE_KONTEJNER_FIKSNI
+        );
+
+        korijen.setTop(trakeKontejner);
     }
 
     private void dodajSadrzaj() {
         glavniSadrzajKontejner = kreirajSadrzaj();
         korijen.setCenter(glavniSadrzajKontejner);
+        VBox.setVgrow(glavniSadrzajKontejner, Priority.ALWAYS);
     }
 
     private void postaviScenu() {
@@ -99,28 +100,31 @@ public abstract class OsnovniPogled {
 
     private List<String> ucitajStylesheets() {
         return List.of(
-                getResourcePath(CSS_GLOBALNI),
-                getResourcePath(CSS_KOMPONENTE)
+                vratiPutanjuResursa(CSS_GLOBALNI),
+                vratiPutanjuResursa(CSS_KOMPONENTE)
         );
     }
 
-    private String getResourcePath(String resource) {
+    private String vratiPutanjuResursa(String resurs) {
         return Objects.requireNonNull(
-                getClass().getResource(resource),
-                "Stylesheet nije pronađen: " + resource
+                getClass().getResource(resurs),
+                "Stylesheet nije pronađen: " + resurs
         ).toExternalForm();
     }
 
     private HBox kreirajGornjuTraku() {
         HBox traka = new HBox();
-        traka.setPadding(TOP_BAR_PADDING);
         traka.setAlignment(Pos.CENTER_LEFT);
-        traka.setSpacing(TOP_BAR_SPACING);
-        traka.getStyleClass().add("gornja-traka");
+        traka.getStyleClass().addAll(
+                Stilovi.GORNJA_TRAKA,
+                Stilovi.GORNJA_TRAKA_FIKSNA,
+                Stilovi.TOP_BAR_PADDING,
+                Stilovi.TOP_BAR_RAZMAK
+        );
 
         naslovTekst.getStyleClass().add(Stilovi.NASLOV_TEKST);
-
         traka.getChildren().addAll(naslovTekst, kreirajSpacer(), kreirajJezicniBox());
+
         return traka;
     }
 
@@ -131,13 +135,16 @@ public abstract class OsnovniPogled {
     }
 
     private HBox kreirajInfoTraku() {
-        HBox infoTraka = new HBox(INFO_BAR_SPACING);
-        infoTraka.setPadding(INFO_BAR_PADDING);
+        HBox infoTraka = new HBox();
         infoTraka.setAlignment(Pos.CENTER_LEFT);
+        infoTraka.getStyleClass().addAll(
+                Stilovi.INFO_TRAKA_FIKSNA,
+                Stilovi.INFO_BAR_PADDING,
+                Stilovi.INFO_BAR_RAZMAK
+        );
 
         konfigurirajNatragGumb();
         konfigurirajOdjavaGumb();
-
         prijavljenKorisnikLabel.getStyleClass().add(Stilovi.LABELA_INFORMACIJA);
 
         infoTraka.getChildren().addAll(
@@ -146,6 +153,7 @@ public abstract class OsnovniPogled {
                 prijavljenKorisnikLabel,
                 odjavaGumb
         );
+
         return infoTraka;
     }
 
@@ -161,15 +169,19 @@ public abstract class OsnovniPogled {
     }
 
     private void obradiOdjavu() {
-        UpraviteljZapisima.getInstance().dodajZapis(new Zapis(Sesija.getInstanca().getPrijavljeniKorisnik().getEmail(),
-                ZapisAkcija.ODJAVA, "Uspješna odjava korisnika s ulogom: " + Sesija.getInstanca().getPrijavljeniKorisnik().getUloga()));
+        UpraviteljZapisima.getInstance().dodajZapis(new Zapis(
+                Sesija.getInstanca().getPrijavljeniKorisnik().getEmail(),
+                ZapisAkcija.ODJAVA,
+                "Uspješna odjava korisnika s ulogom: " + Sesija.getInstanca().getPrijavljeniKorisnik().getUloga()
+        ));
         Sesija.getInstanca().odjaviKorisnika();
         UpraviteljPogleda.prikaziBezPovijesti(new LoginPogled());
     }
 
     private HBox kreirajJezicniBox() {
-        HBox jeziciBox = new HBox(LANGUAGE_BOX_SPACING);
+        HBox jeziciBox = new HBox();
         jeziciBox.setAlignment(Pos.CENTER_RIGHT);
+        jeziciBox.getStyleClass().add(Stilovi.LANGUAGE_BOX_RAZMAK);
 
         konfigurirajJezicneVeze();
 
@@ -269,9 +281,5 @@ public abstract class OsnovniPogled {
     private void osvjeziJezicneStilove() {
         boolean jeHrvatski = Jezik.HR.getKod().equals(konfig.getJezik());
         promijeniStilLinkova(jeHrvatski);
-    }
-
-    public Button getNatragGumb() {
-        return natragGumb;
     }
 }

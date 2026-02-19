@@ -2,16 +2,8 @@
     -fx-background-color: linear-gradient(to bottom, #f8f9fa, #e9ecef);
 }
 
-.pozadina-bijela {
-    -fx-background-color: #ffffff;
-}
-
 .pozadina-svijetla {
     -fx-background-color: #ecf0f1;
-}
-
-.pozadina-tamna {
-    -fx-background-color: #2c3e50;
 }
 
 .naslov-tekst {
@@ -37,6 +29,7 @@
     -fx-fill: #34495e;
 }
 
+/* ========== RAZMACI ========== */
 .razmak-mali {
     -fx-spacing: 10px;
 }
@@ -49,6 +42,59 @@
     -fx-spacing: 30px;
 }
 
+/* Specifični razmaci */
+.razmak-kontrole {
+    -fx-spacing: 15px;
+}
+
+.razmak-forma {
+    -fx-spacing: 15px;
+    -fx-vgap: 15px;
+    -fx-hgap: 10px;
+}
+
+.razmak-tablice {
+    -fx-spacing: 10px;
+}
+
+.razmak-gumbi {
+    -fx-spacing: 10px;
+}
+
+.razmak-radio {
+    -fx-spacing: 15px;
+}
+
+.razmak-akcije {
+    -fx-spacing: 10px;
+}
+
+.razmak-unos {
+    -fx-spacing: 10px;
+}
+
+.razmak-kolone {
+    -fx-hgap: 10px;
+}
+
+.razmak-tablica-kontejner {
+    -fx-spacing: 5px;
+}
+
+/* Top bar specifični razmaci */
+.top-bar-razmak {
+    -fx-spacing: 20px;
+}
+
+.info-bar-razmak {
+    -fx-spacing: 10px;
+}
+
+.language-box-razmak {
+    -fx-spacing: 5px;
+}
+
+/* ========== PADDING ========== */
 .padding-mali {
     -fx-padding: 10px;
 }
@@ -58,9 +104,23 @@
 }
 
 .padding-veliki {
-    -fx-padding: 30px;
+    -fx-padding: 40px;
 }
 
+/* Specifični paddingi */
+.padding-lijevo-desno {
+    -fx-padding: 20px 20px 20px 20px;
+}
+
+.top-bar-padding {
+    -fx-padding: 15px 20px 15px 20px;
+}
+
+.info-bar-padding {
+    -fx-padding: 8px 20px 8px 20px;  /* Prilagođeno za veću traku */
+}
+
+/* ========== POZICIONIRANJE ========== */
 .sredina {
     -fx-alignment: center;
 }
@@ -77,6 +137,7 @@
     -fx-alignment: top-center;
 }
 
+/* ========== SJENE ========== */
 .sjena-mala {
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
 }
@@ -89,6 +150,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 15, 0, 0, 5);
 }
 
+/* ========== OBRUBI ========== */
 .obrub-svijetao {
     -fx-border-color: #dee2e6;
     -fx-border-width: 1px;
@@ -111,4 +173,49 @@
     -fx-border-color: #2ecc71;
     -fx-border-width: 2px;
     -fx-border-radius: 5px;
+}
+
+/* ========== TRAKE S FIKSNOM VISINOM ========== */
+
+.gornja-traka {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 0 0 0;
+}
+
+/* Gornja traka - fiksna visina */
+.gornja-traka-fiksna {
+    -fx-min-height: 50px;
+    -fx-pref-height: 50px;
+    -fx-max-height: 50px;
+}
+
+/* Info traka - fiksna visina */
+.info-traka-fiksna {
+    -fx-min-height: 50px;
+    -fx-pref-height: 50px;
+    -fx-max-height: 50px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 0 0 0;
+}
+
+/* Kontejner za obje trake - fiksna ukupna visina */
+.trake-kontejner-fiksni {
+    -fx-min-height: 100px;
+    -fx-pref-height: 100px;
+    -fx-max-height: 100px;
+}
+
+.info-traka-sakrivena {
+    -fx-min-height: 50px;
+    -fx-pref-height: 50px;
+    -fx-max-height: 50px;
+}
+
+.info-traka-sakrivena .info-traka-fiksna {
+    -fx-opacity: 0;
+    -fx-min-height: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
 }

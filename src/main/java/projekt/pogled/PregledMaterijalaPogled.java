@@ -1,9 +1,7 @@
 package projekt.pogled;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -14,34 +12,17 @@ import projekt.model.*;
 import projekt.servis.MaterijalXMLServis;
 import projekt.servis.PredmetServis;
 import projekt.upravitelj.Sesija;
+import projekt.util.PorukaHelper;
 import projekt.util.Stilovi;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class PregledMaterijalaPogled extends OsnovniPogled {
-
-    private static final int RAZMAK_SADRZAJ = 15;
-    private static final int RAZMAK_UNOS = 10;
-    private static final int RAZMAK_AKCIJE = 10;
-    private static final int PADDING_SADRZAJ = 20;
-    private static final int SIRINA_LABELE_PORUKE = 600;
-    private static final int SIRINA_UNOS_NAZIV = 300;
-    private static final int SIRINA_COMBO = 150;
-    private static final int TRAJANJE_PORUKE_MS = 3000;
-
-    private static final double SIRINA_NAZIV_PREDMETA = 0.45;
-    private static final double SIRINA_SIFRA_PREDMETA = 0.2;
-    private static final double SIRINA_ECTS_PREDMETA = 0.15;
-    private static final double SIRINA_SEMESTAR_PREDMETA = 0.2;
-
-    private static final double SIRINA_NAZIV_MATERIJALA = 0.65;
-    private static final double SIRINA_TIP_MATERIJALA = 0.35;
 
     private final PredmetServis predmetServis;
     private final MaterijalXMLServis materijalServis;
     private final Profesor profesor;
+    private final PorukaHelper poruke = PorukaHelper.kreiraj(prijevod);
 
     private final ObservableList<Predmet> predmetiProfesora = FXCollections.observableArrayList();
     private final ObservableList<MaterijalXML> materijaliPredmeta = FXCollections.observableArrayList();
@@ -69,11 +50,6 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
     private final Button urediGumb = new Button();
     private final Button izbrisiGumb = new Button();
 
-    private final HBox hboxPoruka = new HBox();
-    private final Label porukaLabela = new Label();
-    private String trenutnaPoruka = null;
-    private Timer timerPoruke;
-
     private MaterijalXML trenutnoUredjivani = null;
 
     public PregledMaterijalaPogled() {
@@ -82,25 +58,23 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         this.materijalServis = new MaterijalXMLServis();
 
         Korisnik prijavljeniKorisnik = Sesija.getInstanca().getPrijavljeniKorisnik();
-        if (prijavljeniKorisnik instanceof Profesor) {
-            this.profesor = (Profesor) prijavljeniKorisnik;
-        } else {
-            throw new IllegalStateException("Samo profesori mogu pristupiti materijalima");
-        }
+        this.profesor = (Profesor) prijavljeniKorisnik;
     }
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox sadrzajBox = new VBox(RAZMAK_SADRZAJ);
-        sadrzajBox.setPadding(new Insets(PADDING_SADRZAJ));
-        sadrzajBox.getStyleClass().add(Stilovi.POZADINA_SVIJETLA);
+        VBox sadrzajBox = new VBox();
+        sadrzajBox.getStyleClass().addAll(
+                Stilovi.POZADINA_SVIJETLA,
+                Stilovi.RAZMAK_SREDNJI,
+                Stilovi.PADDING_SREDNJI
+        );
 
         konfigurirajNaslov();
         konfigurirajTablicuPredmeta();
         konfigurirajTablicuMaterijala();
 
         HBox unosBox = kreirajUnosBox();
-        konfigurirajPorukaLabelu();
         HBox akcijeBox = kreirajAkcijeBox();
 
         VBox.setVgrow(tablicaPredmeta, Priority.ALWAYS);
@@ -112,7 +86,7 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
                 materijaliLabel,
                 tablicaMaterijala,
                 unosBox,
-                hboxPoruka,
+                poruke.kontejner,
                 akcijeBox
         );
 
@@ -136,10 +110,10 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         ectsPredmetaKolona.setCellValueFactory(new PropertyValueFactory<>("ectsBodovi"));
         semestarPredmetaKolona.setCellValueFactory(new PropertyValueFactory<>("semestar"));
 
-        nazivPredmetaKolona.prefWidthProperty().bind(tablicaPredmeta.widthProperty().multiply(SIRINA_NAZIV_PREDMETA));
-        sifraPredmetaKolona.prefWidthProperty().bind(tablicaPredmeta.widthProperty().multiply(SIRINA_SIFRA_PREDMETA));
-        ectsPredmetaKolona.prefWidthProperty().bind(tablicaPredmeta.widthProperty().multiply(SIRINA_ECTS_PREDMETA));
-        semestarPredmetaKolona.prefWidthProperty().bind(tablicaPredmeta.widthProperty().multiply(SIRINA_SEMESTAR_PREDMETA));
+        nazivPredmetaKolona.getStyleClass().add(Stilovi.KOLONA_NAZIV_PREDMETA);
+        sifraPredmetaKolona.getStyleClass().add(Stilovi.KOLONA_SIFRA_PREDMETA);
+        ectsPredmetaKolona.getStyleClass().add(Stilovi.KOLONA_ECTS_PREDMETA);
+        semestarPredmetaKolona.getStyleClass().add(Stilovi.KOLONA_SEMESTAR_PREDMETA);
 
         tablicaPredmeta.getColumns().addAll(
                 nazivPredmetaKolona, sifraPredmetaKolona,
@@ -158,8 +132,8 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
             return new javafx.beans.property.SimpleStringProperty(prevedeniTip);
         });
 
-        nazivMaterijalKolona.prefWidthProperty().bind(tablicaMaterijala.widthProperty().multiply(SIRINA_NAZIV_MATERIJALA));
-        tipMaterijalKolona.prefWidthProperty().bind(tablicaMaterijala.widthProperty().multiply(SIRINA_TIP_MATERIJALA));
+        nazivMaterijalKolona.getStyleClass().add(Stilovi.KOLONA_NAZIV_MATERIJALA);
+        tipMaterijalKolona.getStyleClass().add(Stilovi.KOLONA_TIP_MATERIJALA);
 
         tablicaMaterijala.getColumns().addAll(nazivMaterijalKolona, tipMaterijalKolona);
         tablicaMaterijala.setItems(materijaliPredmeta);
@@ -176,11 +150,18 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
     }
 
     private HBox kreirajUnosBox() {
-        HBox unosBox = new HBox(RAZMAK_UNOS);
+        HBox unosBox = new HBox();
         unosBox.setAlignment(Pos.CENTER_LEFT);
+        unosBox.getStyleClass().addAll(
+                Stilovi.RAZMAK_UNOS
+        );
 
-        unosNaziva.setPrefWidth(SIRINA_UNOS_NAZIV);
-        tipComboBox.setPrefWidth(SIRINA_COMBO);
+        unosNaziva.getStyleClass().addAll(
+                Stilovi.UNOS_NAZIV_SIRINA
+        );
+        tipComboBox.getStyleClass().addAll(
+                Stilovi.POLJE_SIRINA_COMBO
+        );
 
         unosNaziva.getStyleClass().add(Stilovi.POLJE_TEKSTA);
 
@@ -215,19 +196,13 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         });
     }
 
-    private void konfigurirajPorukaLabelu() {
-        hboxPoruka.getChildren().clear();
-        porukaLabela.getStyleClass().add(Stilovi.PORUKA_GRESKA);
-        porukaLabela.setWrapText(true);
-        porukaLabela.setMaxWidth(SIRINA_LABELE_PORUKE);
-        hboxPoruka.setAlignment(Pos.CENTER);
-        hboxPoruka.getChildren().add(porukaLabela);
-        hboxPoruka.setVisible(false);
-    }
-
     private HBox kreirajAkcijeBox() {
-        HBox akcijeBox = new HBox(RAZMAK_AKCIJE);
+        HBox akcijeBox = new HBox();
+        unosNaziva.getStyleClass().addAll(
+                Stilovi.RAZMAK_AKCIJE
+        );
         akcijeBox.setAlignment(Pos.CENTER);
+        akcijeBox.getStyleClass().add(Stilovi.RAZMAK_GUMBI);
 
         spremiGumb.getStyleClass().add(Stilovi.GUMB_PRIMARAN);
         urediGumb.getStyleClass().add(Stilovi.GUMB_SEKUNDARAN);
@@ -340,7 +315,7 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         } catch (Exception e) {
             System.err.println("Greška pri učitavanju materijala: " + e.getMessage());
             materijaliPredmeta.clear();
-            prikaziGresku("greska_ucitavanje_materijala");
+            tablicaMaterijala.setPlaceholder(new Label(prijevod.getPrijevod("greska_ucitavanje_materijala")));
         }
     }
 
@@ -371,7 +346,7 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
 
         } catch (Exception e) {
             System.err.println("Greška pri spremanju materijala: " + e.getMessage());
-            prikaziGresku("greska_spremanje_materijala");
+            poruke.prikaziGreskuSTimerom("greska_spremanje_materijala");
         }
     }
 
@@ -387,7 +362,7 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         }
 
         if (!uspjeh) {
-            prikaziGresku("greska_dodavanje_materijala");
+            poruke.prikaziGreskuSTimerom("greska_dodavanje_materijala");
         }
     }
 
@@ -402,7 +377,7 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         );
 
         if (!uspjeh) {
-            prikaziGresku("greska_azuriranje_materijala");
+            poruke.prikaziGreskuSTimerom("greska_azuriranje_materijala");
         }
     }
 
@@ -423,12 +398,12 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
                     ocistiFormu();
                 }
             } else {
-                prikaziGresku("greska_brisanje_materijala");
+                poruke.prikaziGreskuSTimerom("greska_brisanje_materijala");
             }
 
         } catch (Exception e) {
             System.err.println("Greška pri brisanju materijala: " + e.getMessage());
-            prikaziGresku("greska_brisanje_materijala");
+            poruke.prikaziGreskuSTimerom("greska_brisanje_materijala");
         }
     }
 
@@ -442,40 +417,6 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         trenutnoUredjivani = null;
     }
 
-    private void prikaziGresku(String kljucGreske) {
-        trenutnaPoruka = kljucGreske;
-        porukaLabela.setText(prijevod.getPrijevod(kljucGreske));
-
-        porukaLabela.getStyleClass().removeAll(
-                Stilovi.PORUKA_GRESKA,
-                Stilovi.PORUKA_USPJESNO
-        );
-        porukaLabela.getStyleClass().add(Stilovi.PORUKA_GRESKA);
-
-        hboxPoruka.setVisible(true);
-        startTimerZaBrisanjePoruke();
-    }
-
-    private void sakrijPoruku() {
-        porukaLabela.setText("");
-        hboxPoruka.setVisible(false);
-        trenutnaPoruka = null;
-    }
-
-    private void startTimerZaBrisanjePoruke() {
-        if (timerPoruke != null) {
-            timerPoruke.cancel();
-        }
-
-        timerPoruke = new Timer(true);
-        timerPoruke.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> sakrijPoruku());
-            }
-        }, TRAJANJE_PORUKE_MS);
-    }
-
     @Override
     protected void osvjeziPogledTekstove() {
         osvjeziNaslove();
@@ -485,7 +426,7 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         osvjeziGumbe();
         osvjeziComboBox();
         osvjeziPlaceholdere();
-        osvjeziPorukuAkoPostoji();
+        poruke.osvjeziPoruku();
     }
 
     private void osvjeziNaslove() {
@@ -537,12 +478,6 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
             tablicaMaterijala.setPlaceholder(new Label(prijevod.getPrijevod("odaberite_predmet")));
         } else {
             tablicaMaterijala.setPlaceholder(new Label(prijevod.getPrijevod("nema_materijala")));
-        }
-    }
-
-    private void osvjeziPorukuAkoPostoji() {
-        if (trenutnaPoruka != null) {
-            porukaLabela.setText(prijevod.getPrijevod(trenutnaPoruka));
         }
     }
 }

@@ -1,6 +1,5 @@
 package projekt.pogled;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
@@ -9,10 +8,6 @@ import projekt.upravitelj.UpraviteljPogleda;
 import projekt.util.Stilovi;
 
 public class AdminIzbornikPogled extends OsnovniPogled {
-
-    private static final int RAZMAK_SADRZAJ = 30;
-    private static final int PADDING_SADRZAJ = 40;
-    private static final int SIRINA_GUMBA = 300;
 
     private final Text dodajKorisnikaPodnaslovTekst = new Text();
     private final Button dodajKorisnikaGumb = new Button();
@@ -25,10 +20,13 @@ public class AdminIzbornikPogled extends OsnovniPogled {
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox sadrzajBox = new VBox(RAZMAK_SADRZAJ);
-        sadrzajBox.setPadding(new Insets(PADDING_SADRZAJ));
+        VBox sadrzajBox = new VBox();
         sadrzajBox.setAlignment(Pos.TOP_LEFT);
-        sadrzajBox.getStyleClass().add(Stilovi.POZADINA_SVIJETLA);
+        sadrzajBox.getStyleClass().addAll(
+                Stilovi.POZADINA_SVIJETLA,
+                Stilovi.RAZMAK_VELIKI,
+                Stilovi.PADDING_VELIKI
+        );
 
         VBox dodajKorisnikaSekcija = kreirajDodajKorisnikaSekciju();
         VBox logoviSekcija = kreirajLogoviSekciju();
@@ -42,8 +40,9 @@ public class AdminIzbornikPogled extends OsnovniPogled {
     }
 
     private VBox kreirajDodajKorisnikaSekciju() {
-        VBox sekcija = new VBox(10);
+        VBox sekcija = new VBox();
         sekcija.setAlignment(Pos.TOP_LEFT);
+        sekcija.getStyleClass().add(Stilovi.RAZMAK_MALI);
 
         konfigurirajDodajKorisnikaPodnaslov();
         konfigurirajDodajKorisnikaGumb();
@@ -57,8 +56,9 @@ public class AdminIzbornikPogled extends OsnovniPogled {
     }
 
     private VBox kreirajLogoviSekciju() {
-        VBox sekcija = new VBox(10);
+        VBox sekcija = new VBox();
         sekcija.setAlignment(Pos.TOP_LEFT);
+        sekcija.getStyleClass().add(Stilovi.RAZMAK_MALI);
 
         konfigurirajLogoviPodnaslov();
         konfigurirajLogoviGumb();
@@ -76,8 +76,10 @@ public class AdminIzbornikPogled extends OsnovniPogled {
     }
 
     private void konfigurirajDodajKorisnikaGumb() {
-        dodajKorisnikaGumb.getStyleClass().add(Stilovi.GUMB_PRIMARAN);
-        dodajKorisnikaGumb.setPrefWidth(SIRINA_GUMBA);
+        dodajKorisnikaGumb.getStyleClass().addAll(
+                Stilovi.GUMB_PRIMARAN,
+                Stilovi.GUMB_SIRINA_VELIKA
+        );
         dodajKorisnikaGumb.setOnAction(e -> otvoriDodavanjeKorisnika());
     }
 
@@ -86,8 +88,10 @@ public class AdminIzbornikPogled extends OsnovniPogled {
     }
 
     private void konfigurirajLogoviGumb() {
-        logoviGumb.getStyleClass().add(Stilovi.GUMB_PRIMARAN);
-        logoviGumb.setPrefWidth(SIRINA_GUMBA);
+        logoviGumb.getStyleClass().addAll(
+                Stilovi.GUMB_PRIMARAN,
+                Stilovi.GUMB_SIRINA_VELIKA
+        );
         logoviGumb.setOnAction(e -> otvoriPregledLogova());
     }
 

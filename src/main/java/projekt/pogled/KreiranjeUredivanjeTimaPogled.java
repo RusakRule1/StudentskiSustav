@@ -1,9 +1,7 @@
 package projekt.pogled;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -16,32 +14,19 @@ import projekt.model.TimJson;
 import projekt.servis.StudentServis;
 import projekt.servis.TimJsonServis;
 import projekt.upravitelj.UpraviteljPogleda;
+import projekt.util.PorukaHelper;
 import projekt.util.Stilovi;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
 
-    private static final int RAZMAK_SADRZAJ = 20;
-    private static final int RAZMAK_KONTROLE = 15;
-    private static final int RAZMAK_TABLICE = 10;
-    private static final int RAZMAK_GUMBI = 10;
-    private static final int RAZMAK_TABLICA_KONTEJNER = 5;
-    private static final int PADDING_SADRZAJ = 20;
-    private static final int SIRINA_LABELE_PORUKE = 600;
-    private static final int VISINA_TABLICE = 150;
-    private static final int TRAJANJE_PORUKE_MS = 3000;
     private static final int MIN_DULJINA_NAZIVA = 2;
-
-    private static final double SIRINA_IME_KOLONE = 0.3;
-    private static final double SIRINA_PREZIME_KOLONE = 0.3;
-    private static final double SIRINA_JMBAG_KOLONE = 0.4;
 
     private final TimJsonServis timServis;
     private final StudentServis studentServis;
+    private final PorukaHelper poruke = PorukaHelper.kreiraj(prijevod);
 
     private final TimJson timZaUredivanje;
 
@@ -64,10 +49,6 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
     private final Button spremiGumb = new Button();
     private final Button odustaniGumb = new Button();
 
-    private final HBox hboxPoruka = new HBox();
-    private final Label porukaLabela = new Label();
-    private String trenutnaPoruka = null;
-    private Timer timerPoruke;
 
     public KreiranjeUredivanjeTimaPogled(TimJson timZaUredivanje) {
         super();
@@ -78,21 +59,24 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox sadrzajBox = new VBox(RAZMAK_SADRZAJ);
-        sadrzajBox.setPadding(new Insets(PADDING_SADRZAJ));
-        sadrzajBox.getStyleClass().add(Stilovi.POZADINA_SVIJETLA);
+        VBox sadrzajBox = new VBox();
+        sadrzajBox.setAlignment(Pos.TOP_CENTER);
+        sadrzajBox.getStyleClass().addAll(
+                Stilovi.POZADINA_SVIJETLA,
+                Stilovi.RAZMAK_VELIKI,
+                Stilovi.PADDING_VELIKI
+        );
 
         konfigurirajNaslovKomponente();
         konfigurirajNazivPolje();
         VBox tabliceBox = kreirajTabliceSekciju();
-        konfigurirajPorukaLabelu();
         HBox kontroleBox = kreirajKontrole();
 
         sadrzajBox.getChildren().addAll(
                 naslov,
                 nazivPolje,
                 tabliceBox,
-                hboxPoruka,
+                poruke.kontejner,
                 kontroleBox
         );
 
@@ -111,7 +95,10 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
     }
 
     private VBox kreirajTabliceSekciju() {
-        VBox glavniBox = new VBox(RAZMAK_TABLICE);
+        VBox glavniBox = new VBox();
+        glavniBox.getStyleClass().addAll(
+                Stilovi.RAZMAK_MALI
+        );
 
         VBox postavljeniBox = kreirajPostavljeniSekciju();
         HBox gumbiBox = kreirajGumbeZaManipulaciju();
@@ -125,24 +112,34 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
     }
 
     private VBox kreirajPostavljeniSekciju() {
-        VBox box = new VBox(RAZMAK_TABLICA_KONTEJNER);
+        VBox box = new VBox();
+        box.getStyleClass().addAll(
+                Stilovi.RAZMAK_TABLICA_KONTEJNER
+        );
 
         labelPostavljeni.getStyleClass().add(Stilovi.PODNASLOV_TEKST);
 
         konfigurirajTablicu(tablicaPostavljeniStudenti, postavljeniStudenti);
-        tablicaPostavljeniStudenti.setPrefHeight(VISINA_TABLICE);
+        tablicaPostavljeniStudenti.getStyleClass().addAll(
+                Stilovi.TABLICA_VISINA_MALA
+        );
 
         box.getChildren().addAll(labelPostavljeni, tablicaPostavljeniStudenti);
         return box;
     }
 
     private VBox kreirajDostupniSekciju() {
-        VBox box = new VBox(RAZMAK_TABLICA_KONTEJNER);
+        VBox box = new VBox();
+        box.getStyleClass().addAll(
+                Stilovi.RAZMAK_TABLICA_KONTEJNER
+        );
 
         labelDostupni.getStyleClass().add(Stilovi.PODNASLOV_TEKST);
 
         konfigurirajTablicu(tablicaDostupniStudenti, dostupniStudenti);
-        tablicaDostupniStudenti.setPrefHeight(VISINA_TABLICE);
+        tablicaDostupniStudenti.getStyleClass().addAll(
+                Stilovi.TABLICA_VISINA_MALA
+        );
 
         box.getChildren().addAll(labelDostupni, tablicaDostupniStudenti);
         return box;
@@ -160,9 +157,9 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
         prezimeKolona.setCellValueFactory(new PropertyValueFactory<>("prezime"));
         jmbagKolona.setCellValueFactory(new PropertyValueFactory<>("jmbag"));
 
-        imeKolona.prefWidthProperty().bind(tablica.widthProperty().multiply(SIRINA_IME_KOLONE));
-        prezimeKolona.prefWidthProperty().bind(tablica.widthProperty().multiply(SIRINA_PREZIME_KOLONE));
-        jmbagKolona.prefWidthProperty().bind(tablica.widthProperty().multiply(SIRINA_JMBAG_KOLONE));
+        imeKolona.getStyleClass().add(Stilovi.KOLONA_IME_STUDENTA);
+        prezimeKolona.getStyleClass().add(Stilovi.KOLONA_PREZIME_STUDENTA);
+        jmbagKolona.getStyleClass().add(Stilovi.KOLONA_JMBAG_STUDENTA);
 
         tablica.getColumns().addAll(imeKolona, prezimeKolona, jmbagKolona);
         tablica.setItems(podaci);
@@ -170,7 +167,10 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
     }
 
     private HBox kreirajGumbeZaManipulaciju() {
-        HBox gumbiBox = new HBox(RAZMAK_GUMBI);
+        HBox gumbiBox = new HBox();
+        gumbiBox.getStyleClass().addAll(
+                Stilovi.RAZMAK_GUMBI
+        );
         gumbiBox.setAlignment(Pos.CENTER);
 
         konfigurirajDodajGumb();
@@ -205,7 +205,10 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
     }
 
     private HBox kreirajKontrole() {
-        HBox kontroleBox = new HBox(RAZMAK_KONTROLE);
+        HBox kontroleBox = new HBox();
+        kontroleBox.getStyleClass().addAll(
+                Stilovi.RAZMAK_KONTROLE
+        );
         kontroleBox.setAlignment(Pos.CENTER);
 
         spremiGumb.getStyleClass().add(Stilovi.GUMB_PRIMARAN);
@@ -216,16 +219,6 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
 
         kontroleBox.getChildren().addAll(spremiGumb, odustaniGumb);
         return kontroleBox;
-    }
-
-    private void konfigurirajPorukaLabelu() {
-        hboxPoruka.getChildren().clear();
-        porukaLabela.getStyleClass().add(Stilovi.PORUKA_GRESKA);
-        porukaLabela.setWrapText(true);
-        porukaLabela.setMaxWidth(SIRINA_LABELE_PORUKE);
-        hboxPoruka.setAlignment(Pos.CENTER);
-        hboxPoruka.getChildren().add(porukaLabela);
-        hboxPoruka.setVisible(false);
     }
 
     private void postaviListenere() {
@@ -260,7 +253,7 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
 
         } catch (Exception e) {
             System.err.println("Greška pri učitavanju studenata: " + e.getMessage());
-            prikaziPoruku("greska_ucitavanje_studenata");
+            poruke.prikaziGreskuSTimerom("greska_ucitavanje_studenata");
         }
     }
 
@@ -381,22 +374,22 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
         String naziv = nazivPolje.getText().trim();
 
         if (naziv.isEmpty()) {
-            prikaziPoruku("greska_naziv_tima_obavezan");
+            poruke.prikaziGreskuSTimerom("greska_naziv_tima_obavezan");
             return false;
         }
 
         if (naziv.length() < MIN_DULJINA_NAZIVA) {
-            prikaziPoruku("greska_naziv_tima_prekratak");
+            poruke.prikaziGreskuSTimerom("greska_naziv_tima_prekratak");
             return false;
         }
 
         if (postojiNaziv(naziv)) {
-            prikaziPoruku("greska_naziv_tima_postoji");
+            poruke.prikaziGreskuSTimerom("greska_naziv_tima_postoji");
             return false;
         }
 
         if (postavljeniStudenti.isEmpty()) {
-            prikaziPoruku("greska_tim_mora_imati_clanove");
+            poruke.prikaziGreskuSTimerom("greska_tim_mora_imati_clanove");
             return false;
         }
 
@@ -422,12 +415,12 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
             if (uspjeh) {
                 vratiSeNaPregled();
             } else {
-                prikaziPoruku("greska_tim_nije_kreiran");
+                poruke.prikaziGreskuSTimerom("greska_tim_nije_kreiran");
             }
 
         } catch (Exception e) {
             System.err.println("Greška pri kreiranju tima: " + e.getMessage());
-            prikaziPoruku("greska_tim_nije_spremljen");
+            poruke.prikaziGreskuSTimerom("greska_tim_nije_spremljen");
         }
     }
 
@@ -441,12 +434,12 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
             if (uspjeh) {
                 vratiSeNaPregled();
             } else {
-                prikaziPoruku("greska_tim_nije_azuriran");
+                poruke.prikaziGreskuSTimerom("greska_tim_nije_azuriran");
             }
 
         } catch (Exception e) {
             System.err.println("Greška pri ažuriranju tima: " + e.getMessage());
-            prikaziPoruku("greska_tim_nije_spremljen");
+            poruke.prikaziGreskuSTimerom("greska_tim_nije_spremljen");
         }
     }
 
@@ -458,47 +451,13 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
         return timZaUredivanje != null;
     }
 
-    private void prikaziPoruku(String kljucPoruke) {
-        trenutnaPoruka = kljucPoruke;
-        porukaLabela.setText(prijevod.getPrijevod(kljucPoruke));
-
-        porukaLabela.getStyleClass().removeAll(
-                Stilovi.PORUKA_GRESKA,
-                Stilovi.PORUKA_USPJESNO
-        );
-        porukaLabela.getStyleClass().add(Stilovi.PORUKA_GRESKA);
-
-        hboxPoruka.setVisible(true);
-        startTimerZaBrisanjePoruke();
-    }
-
-    private void sakrijPoruku() {
-        porukaLabela.setText("");
-        hboxPoruka.setVisible(false);
-        trenutnaPoruka = null;
-    }
-
-    private void startTimerZaBrisanjePoruke() {
-        if (timerPoruke != null) {
-            timerPoruke.cancel();
-        }
-
-        timerPoruke = new Timer(true);
-        timerPoruke.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> sakrijPoruku());
-            }
-        }, TRAJANJE_PORUKE_MS);
-    }
-
     @Override
     protected void osvjeziPogledTekstove() {
         osvjeziNaslov();
         osvjeziPolja();
         osvjeziTablice();
         osvjeziGumbe();
-        osvjeziPorukuAkoPostoji();
+        poruke.osvjeziPoruku();
     }
 
     private void osvjeziNaslov() {
@@ -555,11 +514,5 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
         }
 
         odustaniGumb.setText(prijevod.getPrijevod("odustani_gumb"));
-    }
-
-    private void osvjeziPorukuAkoPostoji() {
-        if (trenutnaPoruka != null) {
-            porukaLabela.setText(prijevod.getPrijevod(trenutnaPoruka));
-        }
     }
 }

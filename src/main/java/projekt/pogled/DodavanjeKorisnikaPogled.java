@@ -1,25 +1,17 @@
 package projekt.pogled;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import projekt.model.*;
 import projekt.servis.*;
+import projekt.util.PorukaHelper;
 import projekt.util.Stilovi;
 import projekt.util.Validacija;
 
-import java.util.stream.Stream;
-
 public class DodavanjeKorisnikaPogled extends OsnovniPogled {
-
-    private static final int RAZMAK_SADRZAJ = 30;
-    private static final int RAZMAK_POLJA = 10;
-    private static final int RAZMAK_RADIO = 15;
-    private static final int PADDING_SADRZAJ = 40;
-    private static final int SIRINA_LABELE_GRESKE = 600;
-    private static final int VISINA_PREDMETI_LISTE = 300;
 
     private final PredmetServis predmetServis;
     private final KorisnikServis korisnikServis;
@@ -27,6 +19,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
     private final StudentServis studentServis;
     private final ProfesorServis profesorServis;
     private final AdminServis adminServis;
+    private final PorukaHelper poruke = PorukaHelper.kreiraj(prijevod);
 
     private final Label emailLabela = new Label();
     private final TextField emailPolje = new TextField();
@@ -43,7 +36,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
     private final RadioButton adminRB = new RadioButton();
     private final ToggleGroup ulogaGrupa = new ToggleGroup();
 
-    private final VBox dodatniPodaciBox = new VBox(RAZMAK_POLJA);
+    private final VBox dodatniPodaciBox = new VBox();
 
     private final Label jmbagLabela = new Label();
     private final TextField jmbagPolje = new TextField();
@@ -56,8 +49,6 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
     private final Label ovlastiLabela = new Label();
     private final TextField ovlastiPolje = new TextField();
 
-    private final Label porukaLabela = new Label();
-    private String trenutnaPoruka = null;
     private final Button spremiGumb = new Button();
 
     public DodavanjeKorisnikaPogled() {
@@ -72,22 +63,28 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox sadrzajBox = new VBox(RAZMAK_SADRZAJ);
-        sadrzajBox.setPadding(new Insets(PADDING_SADRZAJ));
+        VBox glavniKontejner = new VBox();
+        glavniKontejner.setAlignment(Pos.TOP_CENTER);
+        VBox.setVgrow(glavniKontejner, Priority.ALWAYS);
+
+        VBox sadrzajBox = new VBox();
         sadrzajBox.setAlignment(Pos.TOP_CENTER);
-        sadrzajBox.getStyleClass().add(Stilovi.POZADINA_SVIJETLA);
+        sadrzajBox.getStyleClass().addAll(
+                Stilovi.POZADINA_SVIJETLA,
+                Stilovi.RAZMAK_VELIKI,
+                Stilovi.PADDING_VELIKI
+        );
 
         VBox osnovnaPoljaBox = kreirajOsnovnaPolja();
         VBox ulogaBox = kreirajUlogaSekciju();
 
-        konfigurirajPorukaLabelu();
         konfigurirajSpremiGumb();
 
         sadrzajBox.getChildren().addAll(
                 osnovnaPoljaBox,
                 ulogaBox,
                 dodatniPodaciBox,
-                porukaLabela,
+                poruke.kontejner,
                 spremiGumb
         );
 
@@ -95,8 +92,12 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
     }
 
     private VBox kreirajOsnovnaPolja() {
-        VBox box = new VBox(RAZMAK_POLJA);
+        VBox box = new VBox();
+        box.getStyleClass().add(Stilovi.RAZMAK_MALI);
+
         konfigurirajOsnovnaPolja();
+        konfigurirajOsnovneLabele();
+
         box.getChildren().addAll(
                 emailLabela, emailPolje,
                 lozinkaLabela, lozinkaPolje,
@@ -107,11 +108,23 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         return box;
     }
 
+    private void konfigurirajOsnovneLabele() {
+        emailLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
+        lozinkaLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
+        imeLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
+        prezimeLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
+    }
+
     private VBox kreirajUlogaSekciju() {
-        VBox box = new VBox(RAZMAK_POLJA);
+        VBox box = new VBox();
+        box.getStyleClass().add(Stilovi.RAZMAK_MALI);
+        ulogaLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
 
         konfigurirajRadioGumbe();
-        HBox radioBox = new HBox(RAZMAK_RADIO, studentRB, profesorRB, adminRB);
+
+        HBox radioBox = new HBox();
+        radioBox.getStyleClass().add(Stilovi.RAZMAK_RADIO);
+        radioBox.getChildren().addAll(studentRB, profesorRB, adminRB);
 
         box.getChildren().addAll(ulogaLabela, radioBox);
 
@@ -121,14 +134,31 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
     }
 
     private VBox kreirajStudentPolja() {
-        VBox box = new VBox(RAZMAK_POLJA);
+        VBox box = new VBox();
+        box.getStyleClass().add(Stilovi.RAZMAK_MALI);
+        jmbagLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
+        jmbagPolje.getStyleClass().addAll(
+                Stilovi.POLJE_TEKSTA,
+                Stilovi.POLJE_SIRINA_SREDNJA
+        );
         box.getChildren().addAll(jmbagLabela, jmbagPolje);
         return box;
     }
 
     private VBox kreirajProfesorPolja() {
-        VBox box = new VBox(RAZMAK_POLJA);
+        VBox box = new VBox();
+        box.getStyleClass().add(Stilovi.RAZMAK_MALI);
+
         konfigurirajPredmetiListu();
+
+        titulaLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
+        predmetiLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
+
+        titulaPolje.getStyleClass().addAll(
+                Stilovi.POLJE_TEKSTA,
+                Stilovi.POLJE_SIRINA_SREDNJA
+        );
+
         box.getChildren().addAll(
                 titulaLabela, titulaPolje,
                 predmetiLabela, predmetiLista
@@ -137,7 +167,13 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
     }
 
     private VBox kreirajAdminPolja() {
-        VBox box = new VBox(RAZMAK_POLJA);
+        VBox box = new VBox();
+        box.getStyleClass().add(Stilovi.RAZMAK_MALI);
+        ovlastiLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
+        ovlastiPolje.getStyleClass().addAll(
+                Stilovi.POLJE_TEKSTA,
+                Stilovi.POLJE_SIRINA_SREDNJA
+        );
         box.getChildren().addAll(ovlastiLabela, ovlastiPolje);
         return box;
     }
@@ -147,8 +183,12 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         scroll.setFitToWidth(true);
         scroll.setFitToHeight(true);
         scroll.setPannable(true);
+        scroll.getStyleClass().add(Stilovi.SCROLL_PANE_SADRZAJ);
+
         VBox kontejner = new VBox(scroll);
-        kontejner.setAlignment(Pos.CENTER);
+        kontejner.setAlignment(Pos.TOP_CENTER);
+        kontejner.getStyleClass().add(Stilovi.KONTEJNER_SCROLL);
+        VBox.setVgrow(kontejner, Priority.ALWAYS);
 
         return kontejner;
     }
@@ -164,22 +204,19 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         studentRB.setToggleGroup(ulogaGrupa);
         profesorRB.setToggleGroup(ulogaGrupa);
         adminRB.setToggleGroup(ulogaGrupa);
+
+        studentRB.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
+        profesorRB.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
+        adminRB.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
     }
 
     private void konfigurirajPredmetiListu() {
         predmetiLista.getItems().clear();
         predmetiLista.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        predmetiLista.setPrefHeight(VISINA_PREDMETI_LISTE);
+        predmetiLista.getStyleClass().add(Stilovi.LISTA_VISINA);
         predmetiLista.getItems().addAll(
                 predmetServis.dohvatiDostupnePredmete()
         );
-    }
-
-    private void konfigurirajPorukaLabelu() {
-        porukaLabela.getStyleClass().add(Stilovi.PORUKA_GRESKA);
-        porukaLabela.setAlignment(Pos.CENTER);
-        porukaLabela.setMinWidth(SIRINA_LABELE_GRESKE);
-        porukaLabela.setVisible(false);
     }
 
     private void konfigurirajSpremiGumb() {
@@ -206,7 +243,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
     }
 
     private void spremiKorisnika() {
-        pripremiZaValidaciju();
+        poruke.sakrijPoruku();
 
         if (!validirajOsnovnePodatke()) {
             return;
@@ -219,37 +256,32 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         spremiKorisnikaNaTemelјuUloge();
     }
 
-    private void pripremiZaValidaciju() {
-        sakrijPoruku();
-        resetirajStilPolja();
-    }
-
     private boolean validirajOsnovnePodatke() {
         String email = emailPolje.getText().trim();
         String emailGreska = validator.validirajEmailSaPorukom(email);
         if (emailGreska != null) {
-            prikaziGreskuNaPolju(emailPolje, emailGreska);
+            poruke.prikaziGreskuSTimerom(emailGreska);
             return false;
         }
 
         String lozinka = lozinkaPolje.getText();
         String lozinkaGreska = validator.validirajLozinkuSaPorukom(lozinka);
         if (lozinkaGreska != null) {
-            prikaziGreskuNaPolju(lozinkaPolje, lozinkaGreska);
+            poruke.prikaziGreskuSTimerom(lozinkaGreska);
             return false;
         }
 
         String ime = imePolje.getText().trim();
         String imeGreska = validirajIme(ime);
         if (imeGreska != null) {
-            prikaziGreskuNaPolju(imePolje, imeGreska);
+            poruke.prikaziGreskuSTimerom(imeGreska);
             return false;
         }
 
         String prezime = prezimePolje.getText().trim();
         String prezimeGreska = validirajPrezime(prezime);
         if (prezimeGreska != null) {
-            prikaziGreskuNaPolju(prezimePolje, prezimeGreska);
+            poruke.prikaziGreskuSTimerom(prezimeGreska);
             return false;
         }
 
@@ -265,7 +297,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
             return validirajAdminPodatke();
         }
 
-        prikaziGresku("greska_uloga_obavezna");
+        poruke.prikaziGreskuSTimerom("greska_uloga_obavezna");
         return false;
     }
 
@@ -274,7 +306,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         String jmbagGreska = validator.validirajJMBAGSaPorukom(jmbag);
 
         if (jmbagGreska != null) {
-            prikaziGreskuNaPolju(jmbagPolje, jmbagGreska);
+            poruke.prikaziGreskuSTimerom(jmbagGreska);
             return false;
         }
         return true;
@@ -284,11 +316,11 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         String titula = titulaPolje.getText().trim();
 
         if (titula.isEmpty()) {
-            prikaziGreskuNaPolju(titulaPolje, "greska_titula_obavezna");
+            poruke.prikaziGreskuSTimerom("greska_titula_obavezna");
             return false;
         }
         if (predmetiLista.getSelectionModel().getSelectedItems().isEmpty()) {
-            prikaziGresku("greska_predmeti_obavezni");
+            poruke.prikaziGreskuSTimerom("greska_predmeti_obavezni");
             return false;
         }
         return true;
@@ -298,7 +330,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         String ovlasti = ovlastiPolje.getText().trim();
 
         if (ovlasti.isEmpty()) {
-            prikaziGreskuNaPolju(ovlastiPolje, "greska_ovlasti_obavezne");
+            poruke.prikaziGreskuSTimerom("greska_ovlasti_obavezne");
             return false;
         }
         return true;
@@ -339,6 +371,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         }
         if (uspjeh) {
             prikaziUspjehOvisnoOUlozi();
+            ocistiPolja();
         }
     }
 
@@ -351,13 +384,13 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
 
         Korisnik korisnikSEmailom = korisnikServis.pronadiKorisnikaPoEmailu(email);
         if (korisnikSEmailom != null) {
-            prikaziGresku("greska_email_vec_postoji");
+            poruke.prikaziGreskuSTimerom("greska_email_vec_postoji");
             return false;
         }
 
         Student studentSJMBAGom = studentServis.pronadiStudentaPoJMBAGu(jmbag);
         if (studentSJMBAGom != null) {
-            prikaziGresku("greska_jmbag_vec_postoji");
+            poruke.prikaziGreskuSTimerom("greska_jmbag_vec_postoji");
             return false;
         }
         try {
@@ -366,7 +399,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
             return true;
         } catch (Exception e) {
             System.err.println("Greška pri spremanju studenta: " + e.getMessage());
-            prikaziGresku("greska_spremanje_studenta");
+            poruke.prikaziGreskuSTimerom("greska_spremanje_studenta");
             return false;
         }
     }
@@ -381,7 +414,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
 
         Korisnik korisnikSEmailom = korisnikServis.pronadiKorisnikaPoEmailu(email);
         if (korisnikSEmailom != null) {
-            prikaziGresku("greska_email_vec_postoji");
+            poruke.prikaziGreskuSTimerom("greska_email_vec_postoji");
             return false;
         }
 
@@ -392,15 +425,14 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
             return true;
         } catch (Exception e) {
             System.err.println("Greška pri spremanju profesora: " + e.getMessage());
-            prikaziGresku("greska_spremanje_profesora");
+            poruke.prikaziGreskuSTimerom("greska_spremanje_profesora");
             return false;
         }
     }
 
     private void osvjeziListuPredmeta() {
         predmetiLista.getItems().clear();
-        predmetiLista.getItems().setAll(predmetServis.dohvatiDostupnePredmete()
-        );
+        predmetiLista.getItems().setAll(predmetServis.dohvatiDostupnePredmete());
     }
 
     private boolean spremiAdmina() {
@@ -412,7 +444,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
 
         Korisnik korisnikSEmailom = korisnikServis.pronadiKorisnikaPoEmailu(email);
         if (korisnikSEmailom != null) {
-            prikaziGresku("greska_email_vec_postoji");
+            poruke.prikaziGreskuSTimerom("greska_email_vec_postoji");
             return false;
         }
 
@@ -422,88 +454,18 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
             return true;
         } catch (Exception e) {
             System.err.println("Greška pri spremanju admina: " + e.getMessage());
-            prikaziGresku("greska_spremanje_admina");
+            poruke.prikaziGreskuSTimerom("greska_spremanje_admina");
             return false;
         }
     }
 
-    private void prikaziGreskuNaPolju(Control polje, String kljucPoruke) {
-        resetirajStilPolja(polje);
-
-        if (polje instanceof PasswordField) {
-            polje.getStyleClass().add(Stilovi.POLJE_LOZINKE_GRESKA);
-        } else if (polje instanceof TextField) {
-            polje.getStyleClass().add(Stilovi.POLJE_TEKSTA_GRESKA);
-        }
-
-        prikaziGresku(kljucPoruke);
-        polje.requestFocus();
-    }
-
-    private void prikaziGresku(String kljucGreske) {
-        trenutnaPoruka = kljucGreske;
-        porukaLabela.setText(prijevod.getPrijevod(kljucGreske));
-        porukaLabela.getStyleClass().remove(Stilovi.PORUKA_USPJESNO);
-        porukaLabela.getStyleClass().add(Stilovi.PORUKA_GRESKA);
-        porukaLabela.setVisible(true);
-    }
-
     private void prikaziUspjehOvisnoOUlozi() {
         if (studentRB.isSelected()) {
-            prikaziUspjeh("uspjeh_dodavanje_studenta");
+            poruke.prikaziUspjehSTimerom("uspjeh_dodavanje_studenta");
         } else if (profesorRB.isSelected()) {
-            prikaziUspjeh("uspjeh_dodavanje_profesora");
+            poruke.prikaziUspjehSTimerom("uspjeh_dodavanje_profesora");
         } else if (adminRB.isSelected()) {
-            prikaziUspjeh("uspjeh_dodavanje_admina");
-        }
-    }
-
-    private void prikaziUspjeh(String kljucPoruke) {
-        trenutnaPoruka = kljucPoruke;
-        porukaLabela.setText(prijevod.getPrijevod(kljucPoruke));
-        porukaLabela.getStyleClass().remove(Stilovi.PORUKA_GRESKA);
-        porukaLabela.getStyleClass().add(Stilovi.PORUKA_USPJESNO);
-        porukaLabela.setVisible(true);
-        new java.util.Timer().schedule(
-                new java.util.TimerTask() {
-                    @Override
-                    public void run() {
-                        javafx.application.Platform.runLater(() -> sakrijPoruku());
-                    }
-                },
-                3000
-        );
-        ocistiPolja();
-    }
-
-    private void sakrijPoruku() {
-        porukaLabela.setText("");
-        porukaLabela.setVisible(false);
-        trenutnaPoruka = null;
-    }
-
-    private void resetirajStilPolja() {
-        Stream.of(emailPolje, imePolje, prezimePolje, jmbagPolje, titulaPolje, ovlastiPolje)
-                .forEach(this::resetirajStilPolja);
-
-        resetirajStilPolja(lozinkaPolje);
-    }
-
-    private void resetirajStilPolja(Control polje) {
-        if (polje == null) return;
-
-        if (polje instanceof PasswordField) {
-            polje.getStyleClass().removeAll(
-                    Stilovi.POLJE_LOZINKE_GRESKA,
-                    Stilovi.POLJE_LOZINKE_USPJESNO
-            );
-            polje.getStyleClass().add(Stilovi.POLJE_LOZINKE);
-        } else if (polje instanceof TextField) {
-            polje.getStyleClass().removeAll(
-                    Stilovi.POLJE_TEKSTA_GRESKA,
-                    Stilovi.POLJE_TEKSTA_USPJESNO
-            );
-            polje.getStyleClass().add(Stilovi.POLJE_TEKSTA);
+            poruke.prikaziUspjehSTimerom("uspjeh_dodavanje_admina");
         }
     }
 
@@ -526,7 +488,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         osvjeziUlogaSekciju();
         osvjeziSpecificnaPolja();
         osvjeziGumbe();
-        osvjeziPorukuAkoPostoji();
+        poruke.osvjeziPoruku();
     }
 
     private void osvjeziOsnovnaPolja() {
@@ -562,11 +524,5 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
 
     private void osvjeziGumbe() {
         spremiGumb.setText(prijevod.getPrijevod("dodaj_korisnika_gumb"));
-    }
-
-    private void osvjeziPorukuAkoPostoji() {
-        if (trenutnaPoruka != null) {
-            porukaLabela.setText(prijevod.getPrijevod(trenutnaPoruka));
-        }
     }
 }
