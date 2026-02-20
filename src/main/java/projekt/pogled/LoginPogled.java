@@ -40,24 +40,18 @@ public class LoginPogled extends OsnovniPogled {
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox sadrzajBox = new VBox();
-        sadrzajBox.setAlignment(Pos.CENTER);
-        sadrzajBox.getStyleClass().addAll(
-                Stilovi.RAZMAK_VELIKI,
-                Stilovi.PADDING_VELIKI,
-                Stilovi.INFO_TRAKA_SAKRIVENA
-        );
+        VBox sadrzaj = kreirajGlavniSadrzaj(Pos.CENTER, Stilovi.INFO_TRAKA_SAKRIVENA);
 
         konfigurirajPodnaslov();
         GridPane forma = kreirajFormu();
         HBox gumbiBox = kreirajGumbe();
 
-        sadrzajBox.getChildren().addAll(podnaslovTekst, forma, poruke.kontejner, gumbiBox);
+        sadrzaj.getChildren().addAll(podnaslovTekst, forma, poruke.kontejner, gumbiBox);
 
         postaviEventHandlere();
         ucitajZapamcenePodatke();
 
-        return sadrzajBox;
+        return sadrzaj;
     }
 
     protected void sakrijInfoTraku() {
@@ -67,7 +61,7 @@ public class LoginPogled extends OsnovniPogled {
     }
 
     private void konfigurirajPodnaslov() {
-        podnaslovTekst.getStyleClass().add(Stilovi.PODNASLOV_TEKST);
+        podnaslovTekst.getStyleClass().add(Stilovi.NASLOV_POGLEDA);
     }
 
     private GridPane kreirajFormu() {
@@ -77,9 +71,9 @@ public class LoginPogled extends OsnovniPogled {
                 Stilovi.KARTICA,
                 Stilovi.KARTICA_SJENA,
                 Stilovi.RAZMAK_FORMA,
-                Stilovi.RAZMAK_KOLONE
+                Stilovi.RAZMAK_KOLONE,
+                Stilovi.SREDINA
         );
-        mreza.setAlignment(Pos.CENTER);
 
         konfigurirajEmailPolje(mreza);
         konfigurirajLozinkaPolje(mreza);
@@ -90,22 +84,14 @@ public class LoginPogled extends OsnovniPogled {
 
     private void konfigurirajEmailPolje(GridPane mreza) {
         emailLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-        emailPolje.getStyleClass().addAll(
-                Stilovi.POLJE_TEKSTA,
-                Stilovi.POLJE_SIRINA_SREDNJA
-        );
-
+        emailPolje.getStyleClass().add(Stilovi.POLJE_SIRINA_SREDNJA);
         mreza.add(emailLabela, 0, 0);
         mreza.add(emailPolje, 1, 0);
     }
 
     private void konfigurirajLozinkaPolje(GridPane mreza) {
         lozinkaLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-        lozinkaPolje.getStyleClass().addAll(
-                Stilovi.POLJE_LOZINKE,
-                Stilovi.POLJE_SIRINA_SREDNJA
-        );
-
+        lozinkaPolje.getStyleClass().addAll(Stilovi.POLJE_SIRINA_SREDNJA);
         mreza.add(lozinkaLabela, 0, 1);
         mreza.add(lozinkaPolje, 1, 1);
     }
@@ -120,7 +106,7 @@ public class LoginPogled extends OsnovniPogled {
         box.getStyleClass().add(Stilovi.RAZMAK_GUMBI);
 
         prijavaGumb.getStyleClass().addAll(
-                Stilovi.GUMB_PRIMARAN,
+                Stilovi.GUMB_PLAVI,
                 Stilovi.GUMB_SIRINA_SREDNJA
         );
         prijavaGumb.setOnAction(e -> obradiPrijavu());
@@ -247,14 +233,14 @@ public class LoginPogled extends OsnovniPogled {
 
     private void onemoguciFunkcionalnost() {
         prijavaGumb.setDisable(true);
-        prijavaGumb.getStyleClass().remove(Stilovi.GUMB_PRIMARAN);
+        prijavaGumb.getStyleClass().remove(Stilovi.GUMB_PLAVI);
         prijavaGumb.getStyleClass().add(Stilovi.GUMB_ONEMOGUCEN);
     }
 
     private void omoguciFunkcionalnost() {
         prijavaGumb.setDisable(false);
         prijavaGumb.getStyleClass().remove(Stilovi.GUMB_ONEMOGUCEN);
-        prijavaGumb.getStyleClass().add(Stilovi.GUMB_PRIMARAN);
+        prijavaGumb.getStyleClass().add(Stilovi.GUMB_PLAVI);
     }
 
     private void zatvoriSveProzore() {

@@ -1,53 +1,49 @@
 /* ========== GUMBI ========== */
-.gumb {
+.button {
     -fx-font-family: "Arial", sans-serif;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-padding: 12px 30px;
+    -fx-padding: 7px 15px;
     -fx-background-radius: 5px;
     -fx-cursor: hand;
     -fx-border-width: 0;
-}
-
-.gumb-primaran {
-    -fx-background-color: #3498db;
     -fx-text-fill: #ffffff;
 }
 
-.gumb-primaran:hover {
+.gumb-plavi {
+    -fx-background-color: #3498db;
+}
+
+.gumb-plavi:hover {
     -fx-background-color: #2980b9;
 }
 
-.gumb-sekundaran {
+.gumb-zeleni {
     -fx-background-color: #2ecc71;
-    -fx-text-fill: #ffffff;
 }
 
-.gumb-sekundaran:hover {
+.gumb-zeleni:hover {
     -fx-background-color: #27ae60;
 }
 
-.gumb-opasan {
+.gumb-crveni {
     -fx-background-color: #e74c3c;
-    -fx-text-fill: #ffffff;
 }
 
-.gumb-opasan:hover {
+.gumb-crveni:hover {
     -fx-background-color: #c0392b;
 }
 
-.gumb-upozoravajuci {
+.gumb-zuti {
     -fx-background-color: #f39c12;
-    -fx-text-fill: #ffffff;
 }
 
-.gumb-upozoravajuci:hover {
+.gumb-zuti:hover {
     -fx-background-color: #e67e22;
 }
 
 .gumb-onemogucen {
     -fx-background-color: #95a5a6;
-    -fx-text-fill: #ffffff;
     -fx-cursor: default;
 }
 
@@ -65,7 +61,7 @@
 }
 
 /* ========== POLJA ZA UNOS ========== */
-.polje-teksta, .polje-lozinke {
+.text-field, .password-field {
     -fx-font-family: "Arial", sans-serif;
     -fx-font-size: 14px;
     -fx-padding: 10px;
@@ -73,11 +69,10 @@
     -fx-border-radius: 3px;
     -fx-border-color: #bdc3c7;
     -fx-border-width: 1px;
-    -fx-pref-width: 250px;
     -fx-background-color: white;
 }
 
-.polje-teksta:focused, .polje-lozinke:focused {
+.text-field:focused, .password-field:focused {
     -fx-border-color: #3498db;
     -fx-border-width: 2px;
 }
@@ -95,12 +90,8 @@
     -fx-pref-width: 150px;
 }
 
-.unos-naziv-sirina {
-    -fx-pref-width: 300px;
-}
-
 /* ========== LABELE ========== */
-.labela {
+.label {
     -fx-font-family: "Arial", sans-serif;
     -fx-font-size: 14px;
     -fx-text-fill: #000000;
@@ -108,7 +99,6 @@
 
 .labela-podebljana {
     -fx-font-weight: bold;
-    -fx-text-fill: #000000;
 }
 
 .labela-naslov {
@@ -130,7 +120,7 @@
     -fx-text-fill: #3498db;
 }
 
-.labela-prigušena {
+.labela-prigusena {
     -fx-text-fill: #95a5a6;
 }
 
@@ -151,7 +141,7 @@
 }
 
 /* ========== HIPERVEZE ========== */
-.hiperveza {
+.hyperlink {
     -fx-font-family: "Arial", sans-serif;
     -fx-font-size: 14px;
     -fx-border-width: 0;
@@ -170,7 +160,7 @@
     -fx-underline: false;
 }
 
-.hiperveza:hover {
+.hyperlink:hover {
     -fx-text-fill: #2980b9;
 }
 
@@ -242,81 +232,9 @@
     -fx-pref-height: 300px;
 }
 
-/* ========== KOLONE ZA TABLICE ========== */
-/* Predmeti */
-.kolona-naziv-predmeta .label {
+.table-view .column-header .label {
+    -fx-font-weight: bold;
     -fx-text-fill: #000000;
-    -fx-font-weight: bold;
-    -fx-pref-width: 45%;
-}
-
-.kolona-sifra-predmeta .label {
-    -fx-pref-width: 20%;
-    -fx-text-fill: #000000;
-    -fx-font-weight: bold;
-}
-
-.kolona-ects-predmeta .label{
-    -fx-font-weight: bold;
-    -fx-pref-width: 45%;
-    -fx-pref-width: 15%;
-}
-
-.kolona-semestar-predmeta .label{
-    -fx-font-weight: bold;
-    -fx-pref-width: 45%;
-    -fx-pref-width: 20%;
-}
-
-/* Materijali */
-.kolona-naziv-materijala .label{
-    -fx-font-weight: bold;
-    -fx-pref-width: 45%;
-    -fx-pref-width: 65%;
-}
-
-.kolona-tip-materijala .label{
-    -fx-font-weight: bold;
-    -fx-pref-width: 45%;
-    -fx-pref-width: 35%;
-}
-
-/* Studenti */
-.kolona-ime-studenta .label{
-    -fx-font-weight: bold;
-    -fx-pref-width: 45%;
-    -fx-pref-width: 30%;
-}
-
-.kolona-prezime-studenta .label{
-    -fx-font-weight: bold;
-    -fx-pref-width: 45%;
-    -fx-pref-width: 30%;
-}
-
-.kolona-jmbag-studenta .label{
-    -fx-font-weight: bold;
-    -fx-pref-width: 45%;
-    -fx-pref-width: 40%;
-}
-
-/* Timovi */
-.kolona-naziv-tima .label{
-    -fx-font-weight: bold;
-    -fx-pref-width: 45%;
-    -fx-pref-width: 20%;
-}
-
-.kolona-broj-clanova .label{
-    -fx-font-weight: bold;
-    -fx-pref-width: 45%;
-    -fx-pref-width: 20%;
-}
-
-.kolona-clanovi-tima .label{
-    -fx-font-weight: bold;
-    -fx-pref-width: 45%;
-    -fx-pref-width: 60%;
 }
 
 /* ========== SCROLL PANE ZA SADRŽAJ ========== */
@@ -352,4 +270,14 @@
 /* Optional: Stil za sadržaj unutar scroll pane-a */
 .sadrzaj-scroll {
     -fx-background-color: transparent;
+}
+
+/* ========== Sekcije ========== */
+.sekcija {
+    -fx-spacing: 10px;
+    -fx-alignment: top-left;
+}
+
+.radio-button {
+    -fx-text-fill: #000000;
 }

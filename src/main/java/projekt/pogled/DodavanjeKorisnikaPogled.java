@@ -49,7 +49,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
     private final Label ovlastiLabela = new Label();
     private final TextField ovlastiPolje = new TextField();
 
-    private final Button spremiGumb = new Button();
+    private Button spremiGumb;
 
     public DodavanjeKorisnikaPogled() {
         super();
@@ -63,24 +63,14 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox glavniKontejner = new VBox();
-        glavniKontejner.setAlignment(Pos.TOP_CENTER);
-        VBox.setVgrow(glavniKontejner, Priority.ALWAYS);
-
-        VBox sadrzajBox = new VBox();
-        sadrzajBox.setAlignment(Pos.TOP_CENTER);
-        sadrzajBox.getStyleClass().addAll(
-                Stilovi.POZADINA_SVIJETLA,
-                Stilovi.RAZMAK_VELIKI,
-                Stilovi.PADDING_VELIKI
-        );
+        VBox sadrzaj = kreirajGlavniSadrzaj(Pos.TOP_CENTER);
 
         VBox osnovnaPoljaBox = kreirajOsnovnaPolja();
         VBox ulogaBox = kreirajUlogaSekciju();
 
         konfigurirajSpremiGumb();
 
-        sadrzajBox.getChildren().addAll(
+        sadrzaj.getChildren().addAll(
                 osnovnaPoljaBox,
                 ulogaBox,
                 dodatniPodaciBox,
@@ -88,16 +78,12 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
                 spremiGumb
         );
 
-        return kreirajScrollKontejner(sadrzajBox);
+        return kreirajScrollKontejner(sadrzaj);
     }
 
     private VBox kreirajOsnovnaPolja() {
         VBox box = new VBox();
         box.getStyleClass().add(Stilovi.RAZMAK_MALI);
-
-        konfigurirajOsnovnaPolja();
-        konfigurirajOsnovneLabele();
-
         box.getChildren().addAll(
                 emailLabela, emailPolje,
                 lozinkaLabela, lozinkaPolje,
@@ -108,17 +94,9 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         return box;
     }
 
-    private void konfigurirajOsnovneLabele() {
-        emailLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-        lozinkaLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-        imeLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-        prezimeLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-    }
-
     private VBox kreirajUlogaSekciju() {
         VBox box = new VBox();
         box.getStyleClass().add(Stilovi.RAZMAK_MALI);
-        ulogaLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
 
         konfigurirajRadioGumbe();
 
@@ -133,14 +111,21 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         return box;
     }
 
+    private void konfigurirajRadioGumbe() {
+        studentRB.setToggleGroup(ulogaGrupa);
+        profesorRB.setToggleGroup(ulogaGrupa);
+        adminRB.setToggleGroup(ulogaGrupa);
+    }
+
+    private void postaviUlogaListener() {
+        ulogaGrupa.selectedToggleProperty().addListener((obs, stara, nova) ->
+                azurirajDodatnaPoljaNaTemelјuUloge(nova)
+        );
+    }
+
     private VBox kreirajStudentPolja() {
         VBox box = new VBox();
         box.getStyleClass().add(Stilovi.RAZMAK_MALI);
-        jmbagLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-        jmbagPolje.getStyleClass().addAll(
-                Stilovi.POLJE_TEKSTA,
-                Stilovi.POLJE_SIRINA_SREDNJA
-        );
         box.getChildren().addAll(jmbagLabela, jmbagPolje);
         return box;
     }
@@ -150,14 +135,6 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         box.getStyleClass().add(Stilovi.RAZMAK_MALI);
 
         konfigurirajPredmetiListu();
-
-        titulaLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-        predmetiLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-
-        titulaPolje.getStyleClass().addAll(
-                Stilovi.POLJE_TEKSTA,
-                Stilovi.POLJE_SIRINA_SREDNJA
-        );
 
         box.getChildren().addAll(
                 titulaLabela, titulaPolje,
@@ -169,11 +146,6 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
     private VBox kreirajAdminPolja() {
         VBox box = new VBox();
         box.getStyleClass().add(Stilovi.RAZMAK_MALI);
-        ovlastiLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-        ovlastiPolje.getStyleClass().addAll(
-                Stilovi.POLJE_TEKSTA,
-                Stilovi.POLJE_SIRINA_SREDNJA
-        );
         box.getChildren().addAll(ovlastiLabela, ovlastiPolje);
         return box;
     }
@@ -193,41 +165,15 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         return kontejner;
     }
 
-    private void konfigurirajOsnovnaPolja() {
-        emailPolje.getStyleClass().add(Stilovi.POLJE_TEKSTA);
-        lozinkaPolje.getStyleClass().add(Stilovi.POLJE_LOZINKE);
-        imePolje.getStyleClass().add(Stilovi.POLJE_TEKSTA);
-        prezimePolje.getStyleClass().add(Stilovi.POLJE_TEKSTA);
-    }
-
-    private void konfigurirajRadioGumbe() {
-        studentRB.setToggleGroup(ulogaGrupa);
-        profesorRB.setToggleGroup(ulogaGrupa);
-        adminRB.setToggleGroup(ulogaGrupa);
-
-        studentRB.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-        profesorRB.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-        adminRB.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-    }
-
     private void konfigurirajPredmetiListu() {
         predmetiLista.getItems().clear();
         predmetiLista.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         predmetiLista.getStyleClass().add(Stilovi.LISTA_VISINA);
-        predmetiLista.getItems().addAll(
-                predmetServis.dohvatiDostupnePredmete()
-        );
+        predmetiLista.getItems().addAll(predmetServis.dohvatiDostupnePredmete());
     }
 
     private void konfigurirajSpremiGumb() {
-        spremiGumb.getStyleClass().add(Stilovi.GUMB_PRIMARAN);
-        spremiGumb.setOnAction(e -> spremiKorisnika());
-    }
-
-    private void postaviUlogaListener() {
-        ulogaGrupa.selectedToggleProperty().addListener((obs, stara, nova) ->
-                azurirajDodatnaPoljaNaTemelјuUloge(nova)
-        );
+        spremiGumb = kreirajGumb(Stilovi.GUMB_PLAVI, this::spremiKorisnika);
     }
 
     private void azurirajDodatnaPoljaNaTemelјuUloge(Toggle odabranaUloga) {
@@ -248,7 +194,6 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         if (!validirajOsnovnePodatke()) {
             return;
         }
-
         if (!validirajSpecificnePodatkePoUlozi()) {
             return;
         }

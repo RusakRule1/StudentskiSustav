@@ -2,7 +2,6 @@ package projekt.pogled;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -28,9 +27,11 @@ public class PregledZapisaPogled extends OsnovniPogled {
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox sadrzajBox = new VBox(20);
-        sadrzajBox.setPadding(new Insets(20));
-        sadrzajBox.getStyleClass().add(Stilovi.POZADINA_SVIJETLA);
+        VBox sadrzajBox = new VBox();
+        sadrzajBox.getStyleClass().addAll(
+                Stilovi.RAZMAK_SREDNJI,
+                Stilovi.PADDING_SREDNJI
+        );
 
         postaviTablicu();
         VBox.setVgrow(tablicaZapisa, Priority.ALWAYS);
@@ -48,7 +49,7 @@ public class PregledZapisaPogled extends OsnovniPogled {
 
         TableColumn<Zapis, LocalDateTime> vrijemeKolona = new TableColumn<>();
         vrijemeKolona.setCellValueFactory(new PropertyValueFactory<>("vrijeme"));
-        vrijemeKolona.setPrefWidth(150);
+        vrijemeKolona.setPrefWidth(80);
         vrijemeKolona.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(LocalDateTime item, boolean empty) {
@@ -59,7 +60,7 @@ public class PregledZapisaPogled extends OsnovniPogled {
 
         TableColumn<Zapis, String> korisnikKolona = new TableColumn<>();
         korisnikKolona.setCellValueFactory(new PropertyValueFactory<>("korisnik"));
-        korisnikKolona.setPrefWidth(120);
+        korisnikKolona.setPrefWidth(150);
 
         TableColumn<Zapis, String> akcijaKolona = new TableColumn<>();
         akcijaKolona.setCellValueFactory(new PropertyValueFactory<>("akcija"));

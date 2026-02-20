@@ -1,6 +1,5 @@
 package projekt.pogled;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
@@ -10,14 +9,8 @@ import projekt.util.Stilovi;
 
 public class StudentIzbornikPogled extends OsnovniPogled {
 
-    private static final int RAZMAK_SADRZAJ = 30;
-    private static final int PADDING_SADRZAJ = 40;
-    private static final int SIRINA_GUMBA = 300;
-
-    private final Text timoviPodnaslovTekst = new Text();
-    private final Button timoviGumb = new Button();
-    private final Text materijaliPodnaslovTekst = new Text();
-    private final Button materijaliGumb = new Button();
+    private SekcijaInfo dodajKorisnikaSekcija;
+    private SekcijaInfo logoviSekcija;
 
     public StudentIzbornikPogled() {
         super();
@@ -25,101 +18,51 @@ public class StudentIzbornikPogled extends OsnovniPogled {
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox sadrzajBox = new VBox(RAZMAK_SADRZAJ);
-        sadrzajBox.setPadding(new Insets(PADDING_SADRZAJ));
-        sadrzajBox.setAlignment(Pos.TOP_LEFT);
-        sadrzajBox.getStyleClass().add(Stilovi.POZADINA_SVIJETLA);
+        VBox sadrzaj = kreirajGlavniSadrzaj(Pos.TOP_LEFT);
 
-        VBox timoviSekcija = kreirajTimoviSekciju();
-        VBox materijaliSekcija = kreirajMaterijaliSekciju();
+        dodajKorisnikaSekcija = kreirajSekciju("dodaj_korisnika", this::otvoriDodavanjeKorisnika);
+        logoviSekcija = kreirajSekciju("pregledaj_logove", this::otvoriPregledLogova);
 
-        sadrzajBox.getChildren().addAll(
-                timoviSekcija,
-                materijaliSekcija
+        sadrzaj.getChildren().addAll(
+                dodajKorisnikaSekcija.sekcija(),
+                logoviSekcija.sekcija()
         );
 
-        return sadrzajBox;
+        return sadrzaj;
     }
 
-    private VBox kreirajTimoviSekciju() {
-        VBox sekcija = new VBox(10);
-        sekcija.setAlignment(Pos.TOP_LEFT);
+    private SekcijaInfo kreirajSekciju(String kljuc, Runnable akcija) {
+        VBox sekcija = new VBox();
+        sekcija.getStyleClass().add(Stilovi.SEKCIJA);
 
-        konfigurirajTimoviPodnaslov();
-        konfigurirajTimoviGumb();
+        Text podnaslov = new Text();
+        podnaslov.getStyleClass().add(Stilovi.PODNASLOV);
 
-        sekcija.getChildren().addAll(
-                timoviPodnaslovTekst,
-                timoviGumb
-        );
+        Button gumb = kreirajGumb(Stilovi.GUMB_PLAVI, akcija, Stilovi.GUMB_SIRINA_VELIKA);
 
-        return sekcija;
+        sekcija.getChildren().addAll(podnaslov, gumb);
+        return new SekcijaInfo(sekcija, podnaslov, gumb, kljuc);
     }
 
-    private VBox kreirajMaterijaliSekciju() {
-        VBox sekcija = new VBox(10);
-        sekcija.setAlignment(Pos.TOP_LEFT);
-
-        konfigurirajMaterijaliPodnaslov();
-        konfigurirajMaterijaliGumb();
-
-        sekcija.getChildren().addAll(
-                materijaliPodnaslovTekst,
-                materijaliGumb
-        );
-
-        return sekcija;
-    }
-
-    private void konfigurirajTimoviPodnaslov() {
-        timoviPodnaslovTekst.getStyleClass().add(Stilovi.PODNASLOV_TEKST);
-    }
-
-    private void konfigurirajTimoviGumb() {
-        timoviGumb.getStyleClass().add(Stilovi.GUMB_PRIMARAN);
-        timoviGumb.setPrefWidth(SIRINA_GUMBA);
-        timoviGumb.setOnAction(e -> otvoriPregledTimova());
-    }
-
-    private void konfigurirajMaterijaliPodnaslov() {
-        materijaliPodnaslovTekst.getStyleClass().add(Stilovi.PODNASLOV_TEKST);
-    }
-
-    private void konfigurirajMaterijaliGumb() {
-        materijaliGumb.getStyleClass().add(Stilovi.GUMB_PRIMARAN);
-        materijaliGumb.setPrefWidth(SIRINA_GUMBA);
-        materijaliGumb.setOnAction(e -> otvoriPregledMaterijala());
-    }
-
-    private void otvoriPregledTimova() {
+    private void otvoriDodavanjeKorisnika() {
         UpraviteljPogleda.prikazi(new DodavanjeKorisnikaPogled());
     }
 
-    private void otvoriPregledMaterijala() {
+    private void otvoriPregledLogova() {
         UpraviteljPogleda.prikazi(new PregledZapisaPogled());
     }
 
     @Override
     protected void osvjeziPogledTekstove() {
-        osvjeziTimoviSekciju();
-        osvjeziMaterijaliSekciju();
+        osvjeziSekciju(dodajKorisnikaSekcija);
+        osvjeziSekciju(logoviSekcija);
     }
 
-    private void osvjeziTimoviSekciju() {
-        timoviPodnaslovTekst.setText(
-                prijevod.getPrijevod("timovi_podnaslov")
-        );
-        timoviGumb.setText(
-                prijevod.getPrijevod("timovi_gumb")
-        );
+    private void osvjeziSekciju(SekcijaInfo sekcija) {
+        sekcija.podnaslov().setText(prijevod.getPrijevod(sekcija.kljuc() + "_podnaslov"));
+        sekcija.gumb().setText(prijevod.getPrijevod(sekcija.kljuc() + "_gumb"));
     }
 
-    private void osvjeziMaterijaliSekciju() {
-        materijaliPodnaslovTekst.setText(
-                prijevod.getPrijevod("materijali_podnaslov")
-        );
-        materijaliGumb.setText(
-                prijevod.getPrijevod("materijali_gumb")
-        );
+    private record SekcijaInfo(VBox sekcija, Text podnaslov, Button gumb, String kljuc) {
     }
 }

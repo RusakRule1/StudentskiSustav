@@ -3,7 +3,6 @@ package projekt.pogled;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,15 +21,6 @@ import projekt.util.Stilovi;
 import java.util.List;
 
 public class PregledTimovaPogled extends OsnovniPogled {
-
-    private static final int RAZMAK_SADRZAJ = 20;
-    private static final int RAZMAK_KONTROLE = 15;
-    private static final int PADDING_SADRZAJ = 20;
-    private static final int VISINA_TABLICE = 300;
-
-    private static final double SIRINA_NAZIV_KOLONE = 0.2;
-    private static final double SIRINA_BROJ_KOLONE = 0.2;
-    private static final double SIRINA_CLANOVI_KOLONE = 0.6;
 
     private final TimJsonServis timServis;
     private final PorukaHelper poruke = PorukaHelper.kreiraj(prijevod);
@@ -55,9 +45,11 @@ public class PregledTimovaPogled extends OsnovniPogled {
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox sadrzajBox = new VBox(RAZMAK_SADRZAJ);
-        sadrzajBox.setPadding(new Insets(PADDING_SADRZAJ));
-        sadrzajBox.getStyleClass().add(Stilovi.POZADINA_SVIJETLA);
+        VBox sadrzajBox = new VBox();
+        sadrzajBox.getStyleClass().addAll(
+                Stilovi.RAZMAK_SREDNJI,
+                Stilovi.PADDING_SREDNJI
+        );
 
         konfigurirajNaslov();
         konfigurirajTablicu();
@@ -77,7 +69,7 @@ public class PregledTimovaPogled extends OsnovniPogled {
     }
 
     private void konfigurirajNaslov() {
-        naslov.getStyleClass().add(Stilovi.NASLOV_TEKST);
+        naslov.getStyleClass().add(Stilovi.PODNASLOV);
     }
 
     private void konfigurirajTablicu() {
@@ -90,7 +82,7 @@ public class PregledTimovaPogled extends OsnovniPogled {
         tablicaTimova.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         VBox.setVgrow(tablicaTimova, Priority.ALWAYS);
-        tablicaTimova.setPrefHeight(VISINA_TABLICE);
+        tablicaTimova.setStyle(Stilovi.TABLICA_VISINA_VELIKA);
     }
 
     private void konfigurirajKolone() {
@@ -110,19 +102,14 @@ public class PregledTimovaPogled extends OsnovniPogled {
     }
 
     private void postaviSirineKolona() {
-        nazivKolona.prefWidthProperty().bind(
-                tablicaTimova.widthProperty().multiply(SIRINA_NAZIV_KOLONE)
-        );
-        brojKolona.prefWidthProperty().bind(
-                tablicaTimova.widthProperty().multiply(SIRINA_BROJ_KOLONE)
-        );
-        clanoviKolona.prefWidthProperty().bind(
-                tablicaTimova.widthProperty().multiply(SIRINA_CLANOVI_KOLONE)
-        );
+        nazivKolona.getStyleClass().add(Stilovi.KOLONA_NAZIV_TIMA);
+        brojKolona.getStyleClass().add(Stilovi.KOLONA_BROJ_CLANOVA);
+        clanoviKolona.getStyleClass().add(Stilovi.KOLONA_CLANOVI_TIMA);
     }
 
     private HBox kreirajKontrole() {
-        HBox kontroleBox = new HBox(RAZMAK_KONTROLE);
+        HBox kontroleBox = new HBox();
+        kontroleBox.getStyleClass().add(Stilovi.RAZMAK_KONTROLE);
         kontroleBox.setAlignment(Pos.CENTER);
 
         konfigurirajNoviTimGumb();
@@ -141,24 +128,24 @@ public class PregledTimovaPogled extends OsnovniPogled {
     }
 
     private void konfigurirajNoviTimGumb() {
-        noviTimGumb.getStyleClass().add(Stilovi.GUMB_PRIMARAN);
+        noviTimGumb.getStyleClass().add(Stilovi.GUMB_PLAVI);
         noviTimGumb.setOnAction(e -> otvoriKreiranjeTima());
     }
 
     private void konfigurirajUrediTimGumb() {
-        urediTimGumb.getStyleClass().add(Stilovi.GUMB_SEKUNDARAN);
+        urediTimGumb.getStyleClass().add(Stilovi.GUMB_ZELENI);
         urediTimGumb.setOnAction(e -> otvoriUredivanjeTima());
         urediTimGumb.setDisable(true);
     }
 
     private void konfigurirajObrisiTimGumb() {
-        obrisiTimGumb.getStyleClass().add(Stilovi.GUMB_OPASAN);
+        obrisiTimGumb.getStyleClass().add(Stilovi.GUMB_CRVENI);
         obrisiTimGumb.setOnAction(e -> obrisiTim());
         obrisiTimGumb.setDisable(true);
     }
 
     private void konfigurirajOsvjeziGumb() {
-        osvjeziGumb.getStyleClass().add(Stilovi.GUMB_SEKUNDARAN);
+        osvjeziGumb.getStyleClass().add(Stilovi.GUMB_ZELENI);
         osvjeziGumb.setOnAction(e -> ucitajTimove());
     }
 

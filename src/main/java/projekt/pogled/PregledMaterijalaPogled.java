@@ -65,7 +65,6 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
     protected VBox kreirajSadrzaj() {
         VBox sadrzajBox = new VBox();
         sadrzajBox.getStyleClass().addAll(
-                Stilovi.POZADINA_SVIJETLA,
                 Stilovi.RAZMAK_SREDNJI,
                 Stilovi.PADDING_SREDNJI
         );
@@ -98,8 +97,8 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
     }
 
     private void konfigurirajNaslov() {
-        naslov.getStyleClass().add(Stilovi.NASLOV_TEKST);
-        materijaliLabel.getStyleClass().add(Stilovi.PODNASLOV_TEKST);
+        naslov.getStyleClass().add(Stilovi.PODNASLOV);
+        materijaliLabel.getStyleClass().add(Stilovi.PODNASLOV);
     }
 
     private void konfigurirajTablicuPredmeta() {
@@ -132,9 +131,6 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
             return new javafx.beans.property.SimpleStringProperty(prevedeniTip);
         });
 
-        nazivMaterijalKolona.getStyleClass().add(Stilovi.KOLONA_NAZIV_MATERIJALA);
-        tipMaterijalKolona.getStyleClass().add(Stilovi.KOLONA_TIP_MATERIJALA);
-
         tablicaMaterijala.getColumns().addAll(nazivMaterijalKolona, tipMaterijalKolona);
         tablicaMaterijala.setItems(materijaliPredmeta);
 
@@ -157,7 +153,7 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         );
 
         unosNaziva.getStyleClass().addAll(
-                Stilovi.UNOS_NAZIV_SIRINA
+                Stilovi.POLJE_SIRINA_VELIKA
         );
         tipComboBox.getStyleClass().addAll(
                 Stilovi.POLJE_SIRINA_COMBO
@@ -204,9 +200,9 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         akcijeBox.setAlignment(Pos.CENTER);
         akcijeBox.getStyleClass().add(Stilovi.RAZMAK_GUMBI);
 
-        spremiGumb.getStyleClass().add(Stilovi.GUMB_PRIMARAN);
-        urediGumb.getStyleClass().add(Stilovi.GUMB_SEKUNDARAN);
-        izbrisiGumb.getStyleClass().add(Stilovi.GUMB_OPASAN);
+        spremiGumb.getStyleClass().add(Stilovi.GUMB_PLAVI);
+        urediGumb.getStyleClass().add(Stilovi.GUMB_ZELENI);
+        izbrisiGumb.getStyleClass().add(Stilovi.GUMB_CRVENI);
 
         urediGumb.setDisable(true);
         izbrisiGumb.setDisable(true);

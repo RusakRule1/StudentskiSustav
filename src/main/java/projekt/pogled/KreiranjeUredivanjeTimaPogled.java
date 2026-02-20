@@ -62,7 +62,6 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
         VBox sadrzajBox = new VBox();
         sadrzajBox.setAlignment(Pos.TOP_CENTER);
         sadrzajBox.getStyleClass().addAll(
-                Stilovi.POZADINA_SVIJETLA,
                 Stilovi.RAZMAK_VELIKI,
                 Stilovi.PADDING_VELIKI
         );
@@ -87,7 +86,7 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
     }
 
     private void konfigurirajNaslovKomponente() {
-        naslov.getStyleClass().add(Stilovi.NASLOV_TEKST);
+        naslov.getStyleClass().add(Stilovi.PODNASLOV);
     }
 
     private void konfigurirajNazivPolje() {
@@ -117,7 +116,7 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
                 Stilovi.RAZMAK_TABLICA_KONTEJNER
         );
 
-        labelPostavljeni.getStyleClass().add(Stilovi.PODNASLOV_TEKST);
+        labelPostavljeni.getStyleClass().add(Stilovi.PODNASLOV);
 
         konfigurirajTablicu(tablicaPostavljeniStudenti, postavljeniStudenti);
         tablicaPostavljeniStudenti.getStyleClass().addAll(
@@ -134,7 +133,7 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
                 Stilovi.RAZMAK_TABLICA_KONTEJNER
         );
 
-        labelDostupni.getStyleClass().add(Stilovi.PODNASLOV_TEKST);
+        labelDostupni.getStyleClass().add(Stilovi.PODNASLOV);
 
         konfigurirajTablicu(tablicaDostupniStudenti, dostupniStudenti);
         tablicaDostupniStudenti.getStyleClass().addAll(
@@ -183,24 +182,24 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
     }
 
     private void konfigurirajDodajGumb() {
-        dodajGumb.getStyleClass().add(Stilovi.GUMB_PRIMARAN);
+        dodajGumb.getStyleClass().add(Stilovi.GUMB_PLAVI);
         dodajGumb.setOnAction(e -> dodajOdabranogStudenta());
         dodajGumb.setDisable(true);
     }
 
     private void konfigurirajUkloniGumb() {
-        ukloniGumb.getStyleClass().add(Stilovi.GUMB_PRIMARAN);
+        ukloniGumb.getStyleClass().add(Stilovi.GUMB_PLAVI);
         ukloniGumb.setOnAction(e -> ukloniOdabranogStudenta());
         ukloniGumb.setDisable(true);
     }
 
     private void konfigurirajDodajSveGumb() {
-        dodajSveGumb.getStyleClass().add(Stilovi.GUMB_SEKUNDARAN);
+        dodajSveGumb.getStyleClass().add(Stilovi.GUMB_ZELENI);
         dodajSveGumb.setOnAction(e -> dodajSveStudente());
     }
 
     private void konfigurirajUkloniSveGumb() {
-        ukloniSveGumb.getStyleClass().add(Stilovi.GUMB_SEKUNDARAN);
+        ukloniSveGumb.getStyleClass().add(Stilovi.GUMB_ZELENI);
         ukloniSveGumb.setOnAction(e -> ukloniSveStudente());
     }
 
@@ -211,10 +210,10 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
         );
         kontroleBox.setAlignment(Pos.CENTER);
 
-        spremiGumb.getStyleClass().add(Stilovi.GUMB_PRIMARAN);
+        spremiGumb.getStyleClass().add(Stilovi.GUMB_PLAVI);
         spremiGumb.setOnAction(e -> spremiTim());
 
-        odustaniGumb.getStyleClass().add(Stilovi.GUMB_SEKUNDARAN);
+        odustaniGumb.getStyleClass().add(Stilovi.GUMB_ZELENI);
         odustaniGumb.setOnAction(e -> vratiSeNaPregled());
 
         kontroleBox.getChildren().addAll(spremiGumb, odustaniGumb);

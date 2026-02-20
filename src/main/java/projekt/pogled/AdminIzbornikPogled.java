@@ -9,10 +9,8 @@ import projekt.util.Stilovi;
 
 public class AdminIzbornikPogled extends OsnovniPogled {
 
-    private final Text dodajKorisnikaPodnaslovTekst = new Text();
-    private final Button dodajKorisnikaGumb = new Button();
-    private final Text logoviPodnaslovTekst = new Text();
-    private final Button logoviGumb = new Button();
+    private SekcijaInfo dodajKorisnikaSekcija;
+    private SekcijaInfo logoviSekcija;
 
     public AdminIzbornikPogled() {
         super();
@@ -20,79 +18,30 @@ public class AdminIzbornikPogled extends OsnovniPogled {
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox sadrzajBox = new VBox();
-        sadrzajBox.setAlignment(Pos.TOP_LEFT);
-        sadrzajBox.getStyleClass().addAll(
-                Stilovi.POZADINA_SVIJETLA,
-                Stilovi.RAZMAK_VELIKI,
-                Stilovi.PADDING_VELIKI
+        VBox sadrzaj = kreirajGlavniSadrzaj(Pos.TOP_LEFT);
+
+        dodajKorisnikaSekcija = kreirajSekciju("dodaj_korisnika", this::otvoriDodavanjeKorisnika);
+        logoviSekcija = kreirajSekciju("pregledaj_logove", this::otvoriPregledLogova);
+
+        sadrzaj.getChildren().addAll(
+                dodajKorisnikaSekcija.sekcija(),
+                logoviSekcija.sekcija()
         );
 
-        VBox dodajKorisnikaSekcija = kreirajDodajKorisnikaSekciju();
-        VBox logoviSekcija = kreirajLogoviSekciju();
-
-        sadrzajBox.getChildren().addAll(
-                dodajKorisnikaSekcija,
-                logoviSekcija
-        );
-
-        return sadrzajBox;
+        return sadrzaj;
     }
 
-    private VBox kreirajDodajKorisnikaSekciju() {
+    private SekcijaInfo kreirajSekciju(String kljuc, Runnable akcija) {
         VBox sekcija = new VBox();
-        sekcija.setAlignment(Pos.TOP_LEFT);
-        sekcija.getStyleClass().add(Stilovi.RAZMAK_MALI);
+        sekcija.getStyleClass().add(Stilovi.SEKCIJA);
 
-        konfigurirajDodajKorisnikaPodnaslov();
-        konfigurirajDodajKorisnikaGumb();
+        Text podnaslov = new Text();
+        podnaslov.getStyleClass().add(Stilovi.PODNASLOV);
 
-        sekcija.getChildren().addAll(
-                dodajKorisnikaPodnaslovTekst,
-                dodajKorisnikaGumb
-        );
+        Button gumb = kreirajGumb(Stilovi.GUMB_PLAVI, akcija, Stilovi.GUMB_SIRINA_VELIKA);
 
-        return sekcija;
-    }
-
-    private VBox kreirajLogoviSekciju() {
-        VBox sekcija = new VBox();
-        sekcija.setAlignment(Pos.TOP_LEFT);
-        sekcija.getStyleClass().add(Stilovi.RAZMAK_MALI);
-
-        konfigurirajLogoviPodnaslov();
-        konfigurirajLogoviGumb();
-
-        sekcija.getChildren().addAll(
-                logoviPodnaslovTekst,
-                logoviGumb
-        );
-
-        return sekcija;
-    }
-
-    private void konfigurirajDodajKorisnikaPodnaslov() {
-        dodajKorisnikaPodnaslovTekst.getStyleClass().add(Stilovi.PODNASLOV_TEKST);
-    }
-
-    private void konfigurirajDodajKorisnikaGumb() {
-        dodajKorisnikaGumb.getStyleClass().addAll(
-                Stilovi.GUMB_PRIMARAN,
-                Stilovi.GUMB_SIRINA_VELIKA
-        );
-        dodajKorisnikaGumb.setOnAction(e -> otvoriDodavanjeKorisnika());
-    }
-
-    private void konfigurirajLogoviPodnaslov() {
-        logoviPodnaslovTekst.getStyleClass().add(Stilovi.PODNASLOV_TEKST);
-    }
-
-    private void konfigurirajLogoviGumb() {
-        logoviGumb.getStyleClass().addAll(
-                Stilovi.GUMB_PRIMARAN,
-                Stilovi.GUMB_SIRINA_VELIKA
-        );
-        logoviGumb.setOnAction(e -> otvoriPregledLogova());
+        sekcija.getChildren().addAll(podnaslov, gumb);
+        return new SekcijaInfo(sekcija, podnaslov, gumb, kljuc);
     }
 
     private void otvoriDodavanjeKorisnika() {
@@ -105,25 +54,15 @@ public class AdminIzbornikPogled extends OsnovniPogled {
 
     @Override
     protected void osvjeziPogledTekstove() {
-        osvjeziDodajKorisnikaSekciju();
-        osvjeziLogoviSekciju();
+        osvjeziSekciju(dodajKorisnikaSekcija);
+        osvjeziSekciju(logoviSekcija);
     }
 
-    private void osvjeziDodajKorisnikaSekciju() {
-        dodajKorisnikaPodnaslovTekst.setText(
-                prijevod.getPrijevod("dodaj_korisnika_podnaslov")
-        );
-        dodajKorisnikaGumb.setText(
-                prijevod.getPrijevod("dodaj_korisnika_gumb")
-        );
+    private void osvjeziSekciju(SekcijaInfo sekcija) {
+        sekcija.podnaslov().setText(prijevod.getPrijevod(sekcija.kljuc() + "_podnaslov"));
+        sekcija.gumb().setText(prijevod.getPrijevod(sekcija.kljuc() + "_gumb"));
     }
 
-    private void osvjeziLogoviSekciju() {
-        logoviPodnaslovTekst.setText(
-                prijevod.getPrijevod("pregledaj_logove_podnaslov")
-        );
-        logoviGumb.setText(
-                prijevod.getPrijevod("pregledaj_logove_gumb")
-        );
+    private record SekcijaInfo(VBox sekcija, Text podnaslov, Button gumb, String kljuc) {
     }
 }
