@@ -1,9 +1,9 @@
-package projekt.baza.dao;
+package projekt.dao;
 
 import java.util.List;
 
 public interface IOpciDAO<T> {
-    T vratiPoID(Integer id);
+    T pronadjiPoId(Integer id);
 
     List<T> vratiSve();
 
@@ -13,5 +13,5 @@ public interface IOpciDAO<T> {
 
     void obrisi(T entity);
 
-    void obrisiPoID(Integer id);
+    void obrisiPoId(Integer id);
 }

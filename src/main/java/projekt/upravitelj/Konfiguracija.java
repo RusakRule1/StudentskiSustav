@@ -26,17 +26,16 @@ public class Konfiguracija {
     private static final int PODRAZUMIJEVANA_SIRINA = 800;
     private static final int PODRAZUMIJEVANA_VISINA = 600;
 
-    private final Preferences windowsRegistar;
+    private final Preferences prefs;
 
     private String jezik;
     private int visinaProzora;
     private int sirinaProzora;
-
     private String zadnjiKorisnik;
     private boolean zapamtiMe;
 
     private Konfiguracija() {
-        this.windowsRegistar = Preferences.userRoot().node(NAZIV_APLIKACIJE);
+        this.prefs = Preferences.userRoot().node(NAZIV_APLIKACIJE);
         inicijaliziraj();
     }
 
@@ -65,7 +64,7 @@ public class Konfiguracija {
 
     private void ucitajPostavke() {
         ucitajIzINI();
-        ucitajIzRegistra();
+        ucitajKorisnickePostavke();
     }
 
     private void ucitajIzINI() {
@@ -79,11 +78,11 @@ public class Konfiguracija {
 
         try {
             Ini ini = new Ini(iniDatoteka);
-            IniPreferences prefs = new IniPreferences(ini);
+            IniPreferences iniPrefs = new IniPreferences(ini);
 
-            jezik = prefs.node(INI_SEKCIJA).get("jezik", PODRAZUMIJEVANI_JEZIK);
-            sirinaProzora = prefs.node(INI_SEKCIJA).getInt("sirina", PODRAZUMIJEVANA_SIRINA);
-            visinaProzora = prefs.node(INI_SEKCIJA).getInt("visina", PODRAZUMIJEVANA_VISINA);
+            jezik = iniPrefs.node(INI_SEKCIJA).get("jezik", PODRAZUMIJEVANI_JEZIK);
+            sirinaProzora = iniPrefs.node(INI_SEKCIJA).getInt("sirina", PODRAZUMIJEVANA_SIRINA);
+            visinaProzora = iniPrefs.node(INI_SEKCIJA).getInt("visina", PODRAZUMIJEVANA_VISINA);
         } catch (IOException e) {
             System.err.println("Greška pri učitavanju INI datoteke: " + e.getMessage());
             postaviPodrazumijevaneINI();
@@ -110,51 +109,39 @@ public class Konfiguracija {
         }
     }
 
-    private void ucitajIzRegistra() {
+    private void ucitajKorisnickePostavke() {
         try {
-            zadnjiKorisnik = windowsRegistar.get("zadnjiKorisnik", "");
-            zapamtiMe = windowsRegistar.getBoolean("zapamtiMe", false);
+            zadnjiKorisnik = prefs.get("zadnjiKorisnik", "");
+            zapamtiMe = prefs.getBoolean("zapamtiMe", false);
         } catch (Exception e) {
-            System.err.println("Greška pri učitavanju iz registra: " + e.getMessage());
-            postaviPodrazumijevaneRegistar();
+            System.err.println("Greška pri učitavanju iz korisničkih postavki: " + e.getMessage());
+            postaviPodrazumijevaneKorisnickePostavke();
         }
     }
 
-    private boolean spremiURegistar() {
+    private boolean spremiKorisnickePostavke() {
         try {
-            windowsRegistar.put("zadnjiKorisnik", zadnjiKorisnik);
-            windowsRegistar.putBoolean("zapamtiMe", zapamtiMe);
-            windowsRegistar.flush();
+            prefs.put("zadnjiKorisnik", zadnjiKorisnik);
+            prefs.putBoolean("zapamtiMe", zapamtiMe);
+            prefs.flush();
             return true;
         } catch (Exception e) {
-            System.err.println("Greška pri spremanju u registar: " + e.getMessage());
+            System.err.println("Greška pri spremanju u korisničke postavke: " + e.getMessage());
             return false;
         }
     }
 
-    private void postaviPodrazumijevaneRegistar() {
+    private void postaviPodrazumijevaneKorisnickePostavke() {
         zadnjiKorisnik = "";
         zapamtiMe = false;
     }
 
+    public static String getPodrazumijevaniJezik() {
+        return PODRAZUMIJEVANI_JEZIK;
+    }
+
     public String getJezik() {
         return jezik;
-    }
-
-    public int getVisinaProzora() {
-        return visinaProzora;
-    }
-
-    public int getSirinaProzora() {
-        return sirinaProzora;
-    }
-
-    public String getZadnjiKorisnik() {
-        return zadnjiKorisnik;
-    }
-
-    public boolean getZapamtiMe() {
-        return zapamtiMe;
     }
 
     public void setJezik(String jezik) {
@@ -162,22 +149,48 @@ public class Konfiguracija {
             throw new IllegalArgumentException("Jezik ne može biti null ili prazan");
         }
         this.jezik = jezik;
-        spremiUINI();
+    }
+
+    public int getVisinaProzora() {
+        return visinaProzora;
+    }
+
+    public void setVisinaProzora(int visina) {
+        if (visina > 0) {
+            this.visinaProzora = visina;
+        }
+    }
+
+    public int getSirinaProzora() {
+        return sirinaProzora;
+    }
+
+    public void setSirinaProzora(int sirina) {
+        if (sirina > 0) {
+            this.sirinaProzora = sirina;
+        }
+    }
+
+    public String getZadnjiKorisnik() {
+        return zadnjiKorisnik;
     }
 
     public void setZadnjiKorisnik(String korisnik) {
         this.zadnjiKorisnik = korisnik != null ? korisnik : "";
-        spremiURegistar();
+    }
+
+    public boolean getZapamtiMe() {
+        return zapamtiMe;
     }
 
     public void setZapamtiMe(boolean zapamtiMe) {
         this.zapamtiMe = zapamtiMe;
-        spremiURegistar();
     }
 
     public boolean spremiSvePostavke() {
         boolean iniUspjeh = spremiUINI();
-        boolean registarUspjeh = spremiURegistar();
-        return iniUspjeh && registarUspjeh;
+        boolean korisnickePostavkeUspjeh = spremiKorisnickePostavke();
+        return iniUspjeh && korisnickePostavkeUspjeh;
     }
+
 }

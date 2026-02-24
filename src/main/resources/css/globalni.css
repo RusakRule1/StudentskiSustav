@@ -117,50 +117,26 @@
 
 /* ========== TRAKE S FIKSNOM VISINOM ========== */
 .trake-kontejner{
-    -fx-min-height: 100px;
-    -fx-pref-height: 100px;
-    -fx-max-height: 100px;
+    -fx-background-color: #ffffff;
 }
 
 .gornja-traka {
     -fx-alignment: center-left;
-    -fx-padding: 15px 20px 15px 20px;
+    -fx-padding: 15px 20px;
     -fx-spacing: 20px;
     -fx-background-color: #ffffff;
-    -fx-border-color: #dee2e6;
-    -fx-border-width: 0 0 0 0;
-    -fx-min-height: 50px;
-    -fx-pref-height: 50px;
-    -fx-max-height: 50px;
 }
 
 .info-traka {
     -fx-alignment: center-left;
-    -fx-padding: 8px 20px 8px 20px;
+    -fx-padding: 8px 20px;
     -fx-spacing: 10px;
     -fx-background-color: #ffffff;
-    -fx-border-color: #dee2e6;
-    -fx-border-width: 0 0 0 0;
-    -fx-min-height: 50px;
-    -fx-pref-height: 50px;
-    -fx-max-height: 50px;
-}
-
-.info-traka-sakrivena {
-    -fx-min-height: 50px;
-    -fx-pref-height: 50px;
-    -fx-max-height: 50px;
-}
-
-.info-traka-sakrivena .info-traka {
-    -fx-opacity: 0;
-    -fx-min-height: 0;
-    -fx-pref-height: 0;
-    -fx-max-height: 0;
 }
 
 .jezici {
     -fx-spacing: 5px;
     -fx-alignment: center-right;
+    -fx-min-width: 80px;
 }
 

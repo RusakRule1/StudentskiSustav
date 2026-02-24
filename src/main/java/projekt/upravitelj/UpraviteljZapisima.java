@@ -1,90 +1,96 @@
 package projekt.upravitelj;
 
 import projekt.model.Zapis;
+import projekt.model.ZapisAkcija;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UpraviteljZapisima {
 
-    private static final String ZAPIS_DIR = "zapisi";
-    private static final String ZAPIS_FILE = "zapisi.dat";
-    private static final Path ZAPIS_PATH = Paths.get(ZAPIS_DIR, ZAPIS_FILE);
+    private static final Path DIREKTORIJ_ZAPISA = Paths.get(
+            System.getProperty("user.home"),
+            ".studentski-sustav",
+            "zapisi"
+    );
+    private static final Path ZAPIS_PATH = DIREKTORIJ_ZAPISA.resolve("zapisi.dat");
 
-    private static UpraviteljZapisima instance;
+    private static UpraviteljZapisima instanca;
 
     private UpraviteljZapisima() {
         try {
-            if (!Files.exists(Paths.get(ZAPIS_DIR))) {
-                Files.createDirectories(Paths.get(ZAPIS_DIR));
-            }
+            Files.createDirectories(DIREKTORIJ_ZAPISA);
         } catch (IOException e) {
-            throw new RuntimeException("Greška pri kreiranju log direktorija", e);
+            throw new RuntimeException("Greška pri kreiranju direktorija za zapise", e);
         }
     }
 
-    public static synchronized UpraviteljZapisima getInstance() {
-        if (instance == null) {
-            instance = new UpraviteljZapisima();
+    public static synchronized UpraviteljZapisima getInstanca() {
+        if (instanca == null) {
+            instanca = new UpraviteljZapisima();
         }
-        return instance;
+        return instanca;
     }
 
     public void dodajZapis(Zapis zapis) {
-        try {
-            boolean datotekaPostoji = Files.exists(ZAPIS_PATH);
-            long velicina = datotekaPostoji ? Files.size(ZAPIS_PATH) : 0;
-            boolean trebaHeader = velicina == 0;
-            try (FileOutputStream fos = new FileOutputStream(ZAPIS_PATH.toFile(), true)) {
-                ObjectOutputStream oos;
-                if (trebaHeader) {
-                    oos = new ObjectOutputStream(fos);
-                } else {
-                    oos = new AppendableObjectOutputStream(fos);
-                }
-                oos.writeObject(zapis);
-            }
+        try (DataOutputStream dos = new DataOutputStream(
+                new BufferedOutputStream(
+                        new FileOutputStream(ZAPIS_PATH.toFile(), true)))) {
+
+            dos.writeLong(zapis.getVrijeme().toInstant(ZoneOffset.UTC).toEpochMilli());
+
+            byte[] korisnikBytes = zapis.getKorisnik().getBytes(StandardCharsets.UTF_8);
+            dos.writeInt(korisnikBytes.length);
+            dos.write(korisnikBytes);
+
+            dos.writeInt(zapis.getAkcija().ordinal());
+
+            byte[] detaljiBytes = zapis.getDetalji().getBytes(StandardCharsets.UTF_8);
+            dos.writeInt(detaljiBytes.length);
+            dos.write(detaljiBytes);
+
         } catch (IOException e) {
             System.err.println("Greška pri dodavanju zapisa: " + e.getMessage());
         }
     }
 
     public List<Zapis> ucitajSveZapise() {
-        List<Zapis> zapisi = new ArrayList<>();
+        if (!Files.exists(ZAPIS_PATH)) return new ArrayList<>();
 
-        if (!Files.exists(ZAPIS_PATH)) {
-            return zapisi;
-        }
-        try (FileInputStream fis = new FileInputStream(ZAPIS_PATH.toFile());
-             ObjectInputStream ois = new ObjectInputStream(fis)) {
+        List<Zapis> zapisi = new ArrayList<>();
+        try (DataInputStream dis = new DataInputStream(
+                new BufferedInputStream(
+                        new FileInputStream(ZAPIS_PATH.toFile())))) {
             while (true) {
                 try {
-                    Zapis log = (Zapis) ois.readObject();
-                    zapisi.add(log);
+                    long epochMilli = dis.readLong();
+                    LocalDateTime vrijeme = LocalDateTime.ofInstant(
+                            Instant.ofEpochMilli(epochMilli), ZoneOffset.UTC);
+
+                    int korisnikLen = dis.readInt();
+                    String korisnik = new String(dis.readNBytes(korisnikLen), StandardCharsets.UTF_8);
+
+                    ZapisAkcija akcija = ZapisAkcija.values()[dis.readInt()];
+
+                    int detaljiLen = dis.readInt();
+                    String detalji = new String(dis.readNBytes(detaljiLen), StandardCharsets.UTF_8);
+
+                    zapisi.add(new Zapis(korisnik, akcija, detalji, vrijeme));
                 } catch (EOFException e) {
                     break;
                 }
             }
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Greška pri čitanju logova: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Greška pri čitanju zapisa: " + e.getMessage());
         }
         return zapisi;
-    }
-
-
-    private static class AppendableObjectOutputStream extends ObjectOutputStream {
-
-        public AppendableObjectOutputStream(OutputStream out) throws IOException {
-            super(out);
-        }
-
-        @Override
-        protected void writeStreamHeader() throws IOException {
-            reset();
-        }
     }
 }

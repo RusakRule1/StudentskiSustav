@@ -1,61 +1,56 @@
 package projekt.pogled;
 
-import javafx.geometry.Pos;
+import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import projekt.upravitelj.UpraviteljPogleda;
 import projekt.util.Stilovi;
 
+import java.util.List;
+
+import static projekt.util.UITvornica.*;
+
 public class StudentIzbornikPogled extends OsnovniPogled {
 
-    private SekcijaInfo dodajKorisnikaSekcija;
-    private SekcijaInfo logoviSekcija;
+    private List<SekcijaInfo> sekcije;
 
     public StudentIzbornikPogled() {
         super();
+        Platform.runLater(() -> prikaziInfoTraku(true));
     }
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox sadrzaj = kreirajGlavniSadrzaj(Pos.TOP_LEFT);
-
-        dodajKorisnikaSekcija = kreirajSekciju("dodaj_korisnika", this::otvoriDodavanjeKorisnika);
-        logoviSekcija = kreirajSekciju("pregledaj_logove", this::otvoriPregledLogova);
-
-        sadrzaj.getChildren().addAll(
-                dodajKorisnikaSekcija.sekcija(),
-                logoviSekcija.sekcija()
+        sekcije = List.of(
+                kreirajSekciju("dodaj_korisnika", this::otvoriDodavanjeKorisnika)
         );
 
-        return sadrzaj;
+        return vbox(sekcije.stream().map(SekcijaInfo::sekcija).toArray(Node[]::new)).stil(Stilovi.GLAVNI_VBOX).build();
     }
 
     private SekcijaInfo kreirajSekciju(String kljuc, Runnable akcija) {
-        VBox sekcija = new VBox();
-        sekcija.getStyleClass().add(Stilovi.SEKCIJA);
+        Text podnaslov = tekst().stil(Stilovi.PODNASLOV).build();
 
-        Text podnaslov = new Text();
-        podnaslov.getStyleClass().add(Stilovi.PODNASLOV);
+        Button gumbKomponenta = gumb(Stilovi.GUMB_PLAVI, akcija)
+                .stil(Stilovi.GUMB_SIRINA_VELIKA)
+                .build();
 
-        Button gumb = kreirajGumb(Stilovi.GUMB_PLAVI, akcija, Stilovi.GUMB_SIRINA_VELIKA);
+        VBox sekcija = vbox(podnaslov, gumbKomponenta)
+                .stil(Stilovi.SEKCIJA)
+                .build();
 
-        sekcija.getChildren().addAll(podnaslov, gumb);
-        return new SekcijaInfo(sekcija, podnaslov, gumb, kljuc);
+        return new SekcijaInfo(sekcija, podnaslov, gumbKomponenta, kljuc);
     }
 
     private void otvoriDodavanjeKorisnika() {
         UpraviteljPogleda.prikazi(new DodavanjeKorisnikaPogled());
     }
 
-    private void otvoriPregledLogova() {
-        UpraviteljPogleda.prikazi(new PregledZapisaPogled());
-    }
-
     @Override
     protected void osvjeziPogledTekstove() {
-        osvjeziSekciju(dodajKorisnikaSekcija);
-        osvjeziSekciju(logoviSekcija);
+        sekcije.forEach(this::osvjeziSekciju);
     }
 
     private void osvjeziSekciju(SekcijaInfo sekcija) {

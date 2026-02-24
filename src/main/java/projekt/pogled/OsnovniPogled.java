@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -23,6 +24,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static projekt.util.UITvornica.*;
+
 public abstract class OsnovniPogled {
 
     private static final String CSS_GLOBALNI = "/css/globalni.css";
@@ -35,23 +38,34 @@ public abstract class OsnovniPogled {
     protected UpraviteljZapisima upraviteljZapisima;
 
     protected BorderPane korijen;
-    protected final Text naslovAplikacijeTekst = new Text();
+    protected HBox gornjaTraka;
+    protected HBox infoTraka;
+    protected final Text naslovAplikacijeTekst = tekst().stil(Stilovi.NASLOV_APLIKACIJE_TEKST).build();
     protected final Hyperlink hrVeza = new Hyperlink(Jezik.HR.getKod());
     protected final Hyperlink enVeza = new Hyperlink(Jezik.EN.getKod());
-    protected VBox glavniSadrzajKontejner;
-    protected final Label prijavljenKorisnikLabela = new Label();
-    protected final Button odjavaGumb = new Button();
-    protected final Button natragGumb = new Button();
+    protected final Label prijavljenKorisnikLabela = labela().stil(Stilovi.LABELA_INFORMACIJA).build();
+    protected Button odjavaGumb;
+    protected Button natragGumb;
 
     public OsnovniPogled() {
         this.konfig = Konfiguracija.getInstanca();
         this.prijevod = Prijevod.getInstanca();
-        this.upraviteljZapisima = UpraviteljZapisima.getInstance();
+        this.upraviteljZapisima = UpraviteljZapisima.getInstanca();
     }
 
     protected abstract VBox kreirajSadrzaj();
 
     protected abstract void osvjeziPogledTekstove();
+
+    public void priPrikazivanju() {
+    }
+
+    public void priSakrivanju() {
+    }
+
+    protected Pos dohvatiPoravnanjeSadrzaja() {
+        return Pos.TOP_LEFT;
+    }
 
     public void prikazi(Stage glavniProzor) {
         this.prozor = glavniProzor;
@@ -61,49 +75,40 @@ public abstract class OsnovniPogled {
 
     private void kreirajGUI() {
         korijen = new BorderPane();
-        dodajTrake();
-        dodajSadrzaj();
+
+        kreirajGornjuTraku();
+        kreirajInfoTraku();
+
+        VBox centriranSadrzaj = vbox(kreirajSadrzaj())
+                .pozicija(dohvatiPoravnanjeSadrzaja())
+                .grow(Priority.ALWAYS)
+                .build();
+
+        VBox savSadrzaj = vbox(
+                vbox(gornjaTraka, infoTraka).build(),
+                centriranSadrzaj
+        ).build();
+
+        ScrollPane scroll = scrollPane(savSadrzaj)
+                .fitSirinu(true)
+                .fitVisinu(true)
+                .pannable(true)
+                .stil(Stilovi.SCROLL_PANE_SADRZAJ)
+                .build();
+
+        korijen.setCenter(scroll);
+
         postaviScenu();
         osvjeziTekstove();
     }
 
-    private void dodajTrake() {
-        HBox gornjaTraka = kreirajGornjuTraku();
-        HBox infoTraka = kreirajInfoTraku();
-
-        VBox trakeKontejner = new VBox(gornjaTraka, infoTraka);
-        trakeKontejner.getStyleClass().add(Stilovi.TRAKE_KONTEJNER);
-
-        korijen.setTop(trakeKontejner);
-    }
-
-    private void dodajSadrzaj() {
-        glavniSadrzajKontejner = kreirajSadrzaj();
-        korijen.setCenter(glavniSadrzajKontejner);
-        VBox.setVgrow(glavniSadrzajKontejner, Priority.ALWAYS);
-    }
-
-    protected VBox kreirajGlavniSadrzaj(Pos pozicija) {
-        VBox kontejner = new VBox();
-        kontejner.setAlignment(pozicija);
-        kontejner.getStyleClass().addAll(
-                Stilovi.RAZMAK_SREDNJI,
-                Stilovi.PADDING_SREDNJI
-        );
-        return kontejner;
-    }
-
-    protected VBox kreirajGlavniSadrzaj(Pos pozicija, String... dodatniCss) {
-        VBox kontejner = kreirajGlavniSadrzaj(pozicija);
-        kontejner.getStyleClass().addAll(dodatniCss);
-        return kontejner;
-    }
-
     private void postaviScenu() {
-        Scene scena = new Scene(korijen, konfig.getSirinaProzora(), konfig.getVisinaProzora());
+        Scene scena = new Scene(korijen);
         scena.getStylesheets().addAll(ucitajStylesheets());
         prozor.setScene(scena);
-        prozor.setResizable(false);
+        prozor.setWidth(konfig.getSirinaProzora());
+        prozor.setHeight(konfig.getVisinaProzora());
+        prozor.setResizable(true);
     }
 
     private List<String> ucitajStylesheets() {
@@ -120,62 +125,58 @@ public abstract class OsnovniPogled {
         ).toExternalForm();
     }
 
-    private HBox kreirajGornjuTraku() {
-        HBox traka = new HBox();
-        traka.getStyleClass().add(Stilovi.GORNJA_TRAKA);
-        naslovAplikacijeTekst.getStyleClass().add(Stilovi.NASLOV_APLIKACIJE_TEKST);
-
-        traka.getChildren().addAll(naslovAplikacijeTekst, kreirajRazmak(), kreirajJezicniBox());
-        return traka;
+    protected void prikaziInfoTraku(boolean prikazi) {
+        infoTraka.setVisible(prikazi);
+        infoTraka.setManaged(prikazi);
     }
 
-    private HBox kreirajRazmak() {
-        HBox spacer = new HBox();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        return spacer;
+    private void kreirajGornjuTraku() {
+        gornjaTraka = hbox(naslovAplikacijeTekst, razmak(), kreirajJezicniBox())
+                .stil(Stilovi.GORNJA_TRAKA)
+                .build();
     }
 
-    private HBox kreirajInfoTraku() {
-        HBox infoTraka = new HBox();
-        infoTraka.getStyleClass().add(Stilovi.INFO_TRAKA);
-
+    private void kreirajInfoTraku() {
         konfigurirajNatragGumb();
         konfigurirajOdjavaGumb();
-        prijavljenKorisnikLabela.getStyleClass().add(Stilovi.LABELA_INFORMACIJA);
 
-        infoTraka.getChildren().addAll(natragGumb, kreirajRazmak(), prijavljenKorisnikLabela, odjavaGumb);
-
-        return infoTraka;
+        infoTraka = hbox(natragGumb, razmak(), prijavljenKorisnikLabela, odjavaGumb)
+                .stil(Stilovi.INFO_TRAKA)
+                .build();
     }
 
     private void konfigurirajNatragGumb() {
-        natragGumb.getStyleClass().add(Stilovi.GUMB_ZELENI);
-        natragGumb.setVisible(false);
-        natragGumb.setOnAction(e -> UpraviteljPogleda.idiNatrag());
+        natragGumb = gumb(Stilovi.GUMB_ZELENI, UpraviteljPogleda::idiNatrag)
+                .stil(Stilovi.GUMB_SIRINA_MALA)
+                .vidljivo(false)
+                .build();
     }
 
     private void konfigurirajOdjavaGumb() {
-        odjavaGumb.getStyleClass().add(Stilovi.GUMB_CRVENI);
-        odjavaGumb.setOnAction(e -> obradiOdjavu());
+        odjavaGumb = gumb(Stilovi.GUMB_CRVENI, this::obradiOdjavu)
+                .stil(Stilovi.GUMB_SIRINA_MALA)
+                .build();
     }
 
     private void obradiOdjavu() {
-        UpraviteljZapisima.getInstance().dodajZapis(new Zapis(
-                Sesija.getInstanca().getPrijavljeniKorisnik().getEmail(),
-                ZapisAkcija.ODJAVA,
-                "Uspješna odjava korisnika s ulogom: " + Sesija.getInstanca().getPrijavljeniKorisnik().getUloga()
-        ));
-        Sesija.getInstanca().odjaviKorisnika();
-        UpraviteljPogleda.prikaziBezPovijesti(new LoginPogled());
+        Sesija sesija = Sesija.getInstanca();
+        Korisnik prijavljeni = sesija.getPrijavljeniKorisnik();
+        if (prijavljeni != null) {
+            this.upraviteljZapisima.dodajZapis(new Zapis(
+                    prijavljeni.getEmail(),
+                    ZapisAkcija.ODJAVA,
+                    "Uspješna odjava korisnika s ulogom: " + prijavljeni.getUloga()
+            ));
+        }
+        sesija.odjaviKorisnika();
+        UpraviteljPogleda.prikaziBezPovijesti(new PrijavaPogled());
     }
 
     private HBox kreirajJezicniBox() {
-        HBox jeziciBox = new HBox();
-        jeziciBox.getStyleClass().add(Stilovi.JEZICI);
         konfigurirajJezicneVeze();
-        Label separator = new Label(SEPARATOR);
-        jeziciBox.getChildren().addAll(hrVeza, separator, enVeza);
-        return jeziciBox;
+        return hbox(hrVeza, labela(SEPARATOR).build(), enVeza)
+                .stil(Stilovi.JEZICI)
+                .build();
     }
 
     private void konfigurirajJezicneVeze() {
@@ -193,7 +194,7 @@ public abstract class OsnovniPogled {
         osvjeziTekstove();
     }
 
-    protected void osvjeziInfoKorisnika() {
+    private void osvjeziInfoKorisnika() {
         Optional.ofNullable(Sesija.getInstanca().getPrijavljeniKorisnik())
                 .ifPresentOrElse(
                         this::prikaziInfoKorisnika,
@@ -202,14 +203,17 @@ public abstract class OsnovniPogled {
     }
 
     private void prikaziInfoKorisnika(Korisnik korisnik) {
-        String formatiraniTekst = String.format("%s: %s %s",
-                prijevod.getPrijevod("prijavljeni_korisnik"),
-                korisnik.getIme(),
-                korisnik.getPrezime()
-        );
-
-        prijavljenKorisnikLabela.setText(formatiraniTekst);
-        postaviVidljivostKorisnickeInfo(true);
+        try {
+            prijavljenKorisnikLabela.setText(String.format("%s: %s %s",
+                    prijevod.getPrijevod("prijavljeni_korisnik"),
+                    korisnik.getIme(),
+                    korisnik.getPrezime()
+            ));
+            postaviVidljivostKorisnickeInfo(true);
+        } catch (RuntimeException e) {
+            prijavljenKorisnikLabela.setText(prijevod.getPrijevod("greska_ucitavanja_korisnika"));
+            postaviVidljivostKorisnickeInfo(false);
+        }
     }
 
     private void sakrijInfoKorisnika() {
@@ -260,20 +264,6 @@ public abstract class OsnovniPogled {
     }
 
     private void osvjeziJezicneStilove() {
-        boolean jeHrvatski = Jezik.HR.getKod().equals(konfig.getJezik());
-        promijeniStilLinkova(jeHrvatski);
-    }
-
-    protected Button kreirajGumb(String stil, Runnable akcija) {
-        Button gumb = new Button();
-        gumb.getStyleClass().add(stil);
-        gumb.setOnAction(e -> akcija.run());
-        return gumb;
-    }
-
-    protected Button kreirajGumb(String stil, Runnable akcija, String... dodatniStiloviGumba) {
-        Button gumb = kreirajGumb(stil, akcija);
-        gumb.getStyleClass().addAll(dodatniStiloviGumba);
-        return gumb;
+        promijeniStilLinkova(Jezik.HR.getKod().equals(konfig.getJezik()));
     }
 }

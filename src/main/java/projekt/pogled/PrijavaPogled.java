@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import projekt.model.Korisnik;
@@ -19,34 +18,42 @@ import projekt.util.Hash;
 import projekt.util.PorukaHelper;
 import projekt.util.Stilovi;
 
-public class LoginPogled extends OsnovniPogled {
+import static projekt.util.UITvornica.*;
+
+public class PrijavaPogled extends OsnovniPogled {
 
     private final KorisnikServis korisnikServis;
-    private final PorukaHelper poruke = PorukaHelper.kreiraj(prijevod);
+    private final PorukaHelper poruke;
 
-    private final Text podnaslovTekst = new Text();
-    private final Label emailLabela = new Label();
-    private final TextField emailPolje = new TextField();
-    private final Label lozinkaLabela = new Label();
-    private final PasswordField lozinkaPolje = new PasswordField();
+    private final Text podnaslovTekst = tekst().stil(Stilovi.NASLOV_POGLEDA).build();
+    private final Label emailLabela = labela().stil(Stilovi.LABELA_PODEBLJANA).build();
+    private final TextField emailPolje = textField().stil(Stilovi.POLJE_SIRINA_SREDNJA).build();
+    private final Label lozinkaLabela = labela().stil(Stilovi.LABELA_PODEBLJANA).build();
+    private final PasswordField lozinkaPolje = passwordField().stil(Stilovi.POLJE_SIRINA_SREDNJA).build();
     private final CheckBox zapamtiMeCheck = new CheckBox();
-    private final Button prijavaGumb = new Button();
+    private Button prijavaGumb;
 
-    public LoginPogled() {
+    public PrijavaPogled() {
         super();
         this.korisnikServis = new KorisnikServis();
-        Platform.runLater(this::sakrijInfoTraku);
+        this.poruke = PorukaHelper.kreiraj(prijevod);
+        Platform.runLater(() -> prikaziInfoTraku(false));
+    }
+
+    @Override
+    protected Pos dohvatiPoravnanjeSadrzaja() {
+        return Pos.CENTER;
     }
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox sadrzaj = kreirajGlavniSadrzaj(Pos.CENTER, Stilovi.INFO_TRAKA_SAKRIVENA);
+        prijavaGumb = gumb(Stilovi.GUMB_PLAVI, this::obradiPrijavu)
+                .stil(Stilovi.GUMB_SIRINA_SREDNJA)
+                .build();
 
-        konfigurirajPodnaslov();
-        GridPane forma = kreirajFormu();
-        HBox gumbiBox = kreirajGumbe();
-
-        sadrzaj.getChildren().addAll(podnaslovTekst, forma, poruke.kontejner, gumbiBox);
+        VBox sadrzaj = vbox(podnaslovTekst, kreirajFormu(), poruke.kontejner, prijavaGumb)
+                .stil(Stilovi.PRIJAVA_VBOX)
+                .build();
 
         postaviEventHandlere();
         ucitajZapamcenePodatke();
@@ -54,65 +61,19 @@ public class LoginPogled extends OsnovniPogled {
         return sadrzaj;
     }
 
-    protected void sakrijInfoTraku() {
-        if (korijen.getTop() instanceof VBox trakeKontejner) {
-            trakeKontejner.getStyleClass().add(Stilovi.INFO_TRAKA_SAKRIVENA);
-        }
-    }
-
-    private void konfigurirajPodnaslov() {
-        podnaslovTekst.getStyleClass().add(Stilovi.NASLOV_POGLEDA);
-    }
-
-    private GridPane kreirajFormu() {
+    private VBox kreirajFormu() {
         GridPane mreza = new GridPane();
-        mreza.getStyleClass().addAll(
-                Stilovi.MREZA_FORMA,
-                Stilovi.KARTICA,
-                Stilovi.KARTICA_SJENA,
-                Stilovi.RAZMAK_FORMA,
-                Stilovi.RAZMAK_KOLONE,
-                Stilovi.SREDINA
-        );
+        mreza.getStyleClass().add(Stilovi.MREZA_FORMA);
 
-        konfigurirajEmailPolje(mreza);
-        konfigurirajLozinkaPolje(mreza);
-        konfigurirajZapamtiMeCheck(mreza);
-
-        return mreza;
-    }
-
-    private void konfigurirajEmailPolje(GridPane mreza) {
-        emailLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-        emailPolje.getStyleClass().add(Stilovi.POLJE_SIRINA_SREDNJA);
         mreza.add(emailLabela, 0, 0);
         mreza.add(emailPolje, 1, 0);
-    }
-
-    private void konfigurirajLozinkaPolje(GridPane mreza) {
-        lozinkaLabela.getStyleClass().add(Stilovi.LABELA_PODEBLJANA);
-        lozinkaPolje.getStyleClass().addAll(Stilovi.POLJE_SIRINA_SREDNJA);
         mreza.add(lozinkaLabela, 0, 1);
         mreza.add(lozinkaPolje, 1, 1);
-    }
-
-    private void konfigurirajZapamtiMeCheck(GridPane mreza) {
         mreza.add(zapamtiMeCheck, 1, 2);
-    }
 
-    private HBox kreirajGumbe() {
-        HBox box = new HBox();
-        box.setAlignment(Pos.CENTER);
-        box.getStyleClass().add(Stilovi.RAZMAK_GUMBI);
-
-        prijavaGumb.getStyleClass().addAll(
-                Stilovi.GUMB_PLAVI,
-                Stilovi.GUMB_SIRINA_SREDNJA
-        );
-        prijavaGumb.setOnAction(e -> obradiPrijavu());
-
-        box.getChildren().add(prijavaGumb);
-        return box;
+        return vbox(mreza)
+                .stil(Stilovi.KARTICA, Stilovi.KARTICA_SJENA)
+                .build();
     }
 
     private void postaviEventHandlere() {
@@ -163,7 +124,7 @@ public class LoginPogled extends OsnovniPogled {
 
     private void obradiPrijavuUBackgroundu(String email, String lozinka) {
         try {
-            Korisnik korisnik = korisnikServis.pronadiKorisnikaPoEmailu(email);
+            Korisnik korisnik = korisnikServis.pronadjiKorisnikaPoEmailu(email);
 
             if (korisnik == null) {
                 Platform.runLater(this::obradiNeuspjesnuPrijavu);
@@ -180,7 +141,7 @@ public class LoginPogled extends OsnovniPogled {
                 }
             });
         } catch (Exception ex) {
-            javafx.application.Platform.runLater(this::obradiGreskuPrijave);
+            Platform.runLater(this::obradiGreskuPrijave);
         }
     }
 
@@ -215,7 +176,7 @@ public class LoginPogled extends OsnovniPogled {
     }
 
     private void zabiljeziPrijavu(String email, Uloga uloga) {
-        UpraviteljZapisima.getInstance().dodajZapis(
+        UpraviteljZapisima.getInstanca().dodajZapis(
                 new Zapis(email, ZapisAkcija.PRIJAVA,
                         "Uspješna prijava korisnika s ulogom: " + uloga.name())
         );

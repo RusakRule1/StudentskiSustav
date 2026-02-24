@@ -1,10 +1,8 @@
 package projekt.model;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Zapis implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Zapis {
 
     private LocalDateTime vrijeme;
     private String korisnik;
@@ -16,6 +14,13 @@ public class Zapis implements Serializable {
 
     public Zapis(String korisnik, ZapisAkcija akcija, String detalji) {
         this.vrijeme = LocalDateTime.now();
+        this.korisnik = korisnik;
+        this.akcija = akcija;
+        this.detalji = detalji;
+    }
+
+    public Zapis(String korisnik, ZapisAkcija akcija, String detalji, LocalDateTime vrijeme) {
+        this.vrijeme = vrijeme;
         this.korisnik = korisnik;
         this.akcija = akcija;
         this.detalji = detalji;

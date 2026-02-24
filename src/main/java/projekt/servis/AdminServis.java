@@ -1,7 +1,7 @@
 package projekt.servis;
 
-import projekt.baza.repozitorij.AdminRepozitorij;
 import projekt.model.Admin;
+import projekt.repozitorij.AdminRepozitorij;
 
 public class AdminServis {
 

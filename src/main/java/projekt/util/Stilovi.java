@@ -6,6 +6,9 @@ public class Stilovi {
     public static final String PODNASLOV = "podnaslov";
     public static final String TEKST = "tekst";
 
+    public static final String GLAVNI_VBOX = "glavni-vbox";
+    public static final String PRIJAVA_VBOX = "prijava-vbox";
+
     public static final String SREDINA = "sredina";
     public static final String SREDINA_LIJEVO = "sredina-lijevo";
     public static final String SREDINA_DESNO = "sredina-desno";
@@ -22,11 +25,9 @@ public class Stilovi {
 
     public static final String GORNJA_TRAKA = "gornja-traka";
     public static final String INFO_TRAKA = "info-traka";
-    public static final String INFO_TRAKA_SAKRIVENA = "info-traka-sakrivena";
     public static final String JEZICI = "jezici";
     public static final String HIPERVEZA_AKTIVNA = "hiperveza-aktivna";
     public static final String HIPERVEZA_NEAKTIVNA = "hiperveza-neaktivna";
-    public static final String TRAKE_KONTEJNER = "trake-kontejner";
 
     public static final String SCROLL_PANE_SADRZAJ = "scroll-pane-sadrzaj";
     public static final String KONTEJNER_SCROLL = "kontejner-scroll";

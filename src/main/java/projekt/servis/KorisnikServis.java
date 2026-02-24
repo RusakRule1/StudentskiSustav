@@ -1,17 +1,13 @@
 package projekt.servis;
 
-import projekt.baza.repozitorij.KorisnikRepozitorij;
 import projekt.model.Korisnik;
+import projekt.repozitorij.KorisnikRepozitorij;
 
 public class KorisnikServis {
 
     private final KorisnikRepozitorij korisnikRepozitorij = new KorisnikRepozitorij();
 
-    public Korisnik pronadiKorisnikaPoEmailu(String email) {
-        return korisnikRepozitorij.pronadiPoEmailu(email);
-    }
-
-    public void spremiKorisnika(Korisnik noviKorisnik) {
-        korisnikRepozitorij.spremi(noviKorisnik);
+    public Korisnik pronadjiKorisnikaPoEmailu(String email) {
+        return korisnikRepozitorij.pronadjiKorisnikaPoEmailu(email);
     }
 }

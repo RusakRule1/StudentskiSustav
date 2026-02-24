@@ -1,29 +1,31 @@
 package projekt.util;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 public class Hash {
 
-    private static final String BAZA_ZA_PAPAR = "studentskiSustav";
-    private static final String BAZA_ZA_SOL = "OvoJeSol";
+    private static final String ALGORITAM = "SHA-256";
+    private static final String PAPAR_PREFIKS = "studentskiSustav";
+    private static final String SOL_SUFIKS = "OvoJeSol";
+    private static final int BROJ_PAPARA = 100;
+
+    private Hash() {
+    }
 
     public static String hashirajLozinku(String lozinka, String email) {
         String sol = generirajSol(email);
-        String papar = pronadiIspravanPapar(lozinka, sol, email);
-        String kombinacija = lozinka + sol + papar;
-        return hashirajSHA256(kombinacija);
+        String papar = generirajPapar(email);
+        return sha256(lozinka + sol + papar);
     }
 
     public static boolean provjeriLozinku(String unesenaLozinka, String spremljeniHash, String email) {
         String sol = generirajSol(email);
-        for (int i = 0; i < 100; i++) {
-            int indeksPapra = (Math.abs(email.hashCode() % 100) + i) % 100;
-            String papar = BAZA_ZA_PAPAR + indeksPapra;
-            String kombinacija = unesenaLozinka + sol + papar;
-            String hash = hashirajSHA256(kombinacija);
-            if (spremljeniHash.equals(hash)) {
+        for (int i = 0; i < BROJ_PAPARA; i++) {
+            String papar = PAPAR_PREFIKS + i;
+            if (sha256(unesenaLozinka + sol + papar).equals(spremljeniHash)) {
                 return true;
             }
         }
@@ -31,42 +33,27 @@ public class Hash {
     }
 
     private static String generirajSol(String email) {
-        String sol = email + BAZA_ZA_SOL;
-        return Base64.getEncoder().encodeToString(sol.getBytes());
+        return Base64.getEncoder().encodeToString(
+                (email + SOL_SUFIKS).getBytes(StandardCharsets.UTF_8)
+        );
     }
 
-    private static String pronadiIspravanPapar(String lozinka, String sol, String email) {
-        int pocetniIndeks = Math.abs(email.hashCode() % 100);
-
-        for (int i = 0; i < 100; i++) {
-            int indeksPapra = (pocetniIndeks + i) % 100;
-            String papar = BAZA_ZA_PAPAR + indeksPapra;
-            String kombinacija = lozinka + sol + papar;
-            String hash = hashirajSHA256(kombinacija);
-            char prviZnak = hash.charAt(0);
-            if (Character.isLetter(prviZnak)) {
-                return papar;
-            }
-        }
-        return BAZA_ZA_PAPAR + pocetniIndeks;
+    private static String generirajPapar(String email) {
+        int indeks = ((email.hashCode() % BROJ_PAPARA) + BROJ_PAPARA) % BROJ_PAPARA;
+        return PAPAR_PREFIKS + indeks;
     }
 
-    private static String hashirajSHA256(String tekst) {
+    private static String sha256(String tekst) {
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBajtovi = digest.digest(tekst.getBytes());
-
-            StringBuilder hexString = new StringBuilder();
-            for (byte bajt : hashBajtovi) {
-                String hex = Integer.toHexString(0xff & bajt);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
+            MessageDigest digest = MessageDigest.getInstance(ALGORITAM);
+            byte[] hash = digest.digest(tekst.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hex = new StringBuilder(hash.length * 2);
+            for (byte b : hash) {
+                hex.append(String.format("%02x", 0xff & b));
             }
-            return hexString.toString();
+            return hex.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 algoritam nije dostupan", e);
+            throw new RuntimeException("Algoritam " + ALGORITAM + " nije dostupan", e);
         }
     }
 }

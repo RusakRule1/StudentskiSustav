@@ -1,7 +1,7 @@
 package projekt.servis;
 
-import projekt.baza.repozitorij.StudentRepozitorij;
 import projekt.model.Student;
+import projekt.repozitorij.StudentRepozitorij;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ public class StudentServis {
 
     private final StudentRepozitorij studentRepozitorij = new StudentRepozitorij();
 
-    public Student pronadiStudentaPoJMBAGu(String jmbag) {
-        return studentRepozitorij.pronadiStudentaPoJMBAGu(jmbag);
+    public Student pronadjiStudentaPoJMBAGu(String jmbag) {
+        return studentRepozitorij.pronadjiStudentaPoJMBAGu(jmbag);
     }
 
     public void spremiStudenta(Student noviStudent) {

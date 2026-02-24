@@ -50,13 +50,11 @@ public class TimJson {
     }
 
     public int getBrojClanova() {
-        return clanovi != null ? clanovi.size() : 0;
+        return clanovi.size();
     }
 
     public String getClanoviFormatted() {
-        if (clanovi == null || clanovi.isEmpty()) {
-            return "-";
-        }
+        if (clanovi.isEmpty()) return "-";
         return clanovi.stream()
                 .map(clan -> clan.getIme() + " " + clan.getPrezime())
                 .collect(Collectors.joining(", "));

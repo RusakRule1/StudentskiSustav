@@ -15,87 +15,73 @@ import java.util.Base64;
 public class RSA {
 
     private static final String ALGORITAM = "RSA";
-    private static final String DIREKTORIJ_PODACI = "podaci";
-    private static final String DATOTEKA_JAVNOG_KLJUCA = "rsa_javni.key";
-    private static final String DATOTEKA_PRIVATNOG_KLJUCA = "rsa_privatni.key";
+    private static final String TRANSFORMACIJA = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+    private static final Path PUTANJA_JAVNOG_KLJUCA = Paths.get(
+            System.getProperty("user.home"),
+            ".studentski-sustav",
+            "podaci",
+            "rsa_javni.key"
+    );
+    private static final Path PUTANJA_PRIVATNOG_KLJUCA = Paths.get(
+            System.getProperty("user.home"),
+            ".studentski-sustav",
+            "podaci",
+            "rsa_privatni.key"
+    );
 
-    private static RSA instanca;
-    private PublicKey javniKljuc;
-    private PrivateKey privatniKljuc;
+    private static PublicKey javniKljuc;
+    private static PrivateKey privatniKljuc;
 
-    private RSA() {
+    static {
         try {
             ucitajKljuceve();
         } catch (Exception e) {
-            throw new RuntimeException("Greška pri učitavanju RSA ključeva: " + e.getMessage(), e);
+            throw new ExceptionInInitializerError("Greška pri učitavanju RSA ključa: " + e.getMessage());
         }
     }
 
-    public static synchronized RSA getInstance() {
-        if (instanca == null) {
-            instanca = new RSA();
+    private static void ucitajKljuceve() throws Exception {
+        if (!Files.exists(PUTANJA_JAVNOG_KLJUCA)) {
+            throw new RuntimeException("Datoteka s RSA javnim ključem ne postoji: " + PUTANJA_JAVNOG_KLJUCA);
         }
-        return instanca;
-    }
-
-    private void ucitajKljuceve() throws Exception {
-        Path putanjaJavnogKljuca = Paths.get(DIREKTORIJ_PODACI, DATOTEKA_JAVNOG_KLJUCA);
-        Path putanjaPrivatnogKljuca = Paths.get(DIREKTORIJ_PODACI, DATOTEKA_PRIVATNOG_KLJUCA);
-
-        if (!Files.exists(putanjaJavnogKljuca)) {
-            throw new RuntimeException("Datoteka s RSA javnim ključem ne postoji: " + putanjaJavnogKljuca);
-        }
-        if (!Files.exists(putanjaPrivatnogKljuca)) {
-            throw new RuntimeException("Datoteka s RSA privatnim ključem ne postoji: " + putanjaPrivatnogKljuca);
+        if (!Files.exists(PUTANJA_PRIVATNOG_KLJUCA)) {
+            throw new RuntimeException("Datoteka s RSA privatnim ključem ne postoji: " + PUTANJA_PRIVATNOG_KLJUCA);
         }
 
-        String javniKljucString = Files.readString(putanjaJavnogKljuca).trim();
-        byte[] bajtoviJavnogKljuca = Base64.getDecoder().decode(javniKljucString);
-        X509EncodedKeySpec specifikacijaJavnogKljuca = new X509EncodedKeySpec(bajtoviJavnogKljuca);
         KeyFactory tvornicaKljuceva = KeyFactory.getInstance(ALGORITAM);
-        this.javniKljuc = tvornicaKljuceva.generatePublic(specifikacijaJavnogKljuca);
 
-        String privatniKljucString = Files.readString(putanjaPrivatnogKljuca).trim();
+        String javniKljucString = Files.readString(PUTANJA_JAVNOG_KLJUCA).trim();
+        byte[] bajtoviJavnogKljuca = Base64.getDecoder().decode(javniKljucString);
+        javniKljuc = tvornicaKljuceva.generatePublic(new X509EncodedKeySpec(bajtoviJavnogKljuca));
+
+        String privatniKljucString = Files.readString(PUTANJA_PRIVATNOG_KLJUCA).trim();
         byte[] bajtoviPrivatnogKljuca = Base64.getDecoder().decode(privatniKljucString);
-        PKCS8EncodedKeySpec specifikacijaPrivatnogKljuca = new PKCS8EncodedKeySpec(bajtoviPrivatnogKljuca);
-        this.privatniKljuc = tvornicaKljuceva.generatePrivate(specifikacijaPrivatnogKljuca);
+        privatniKljuc = tvornicaKljuceva.generatePrivate(new PKCS8EncodedKeySpec(bajtoviPrivatnogKljuca));
     }
 
-    public String sifriraj(String tekst) {
-        if (tekst == null || tekst.trim().isEmpty()) {
-            return tekst;
-        }
+    public static String sifriraj(String tekst) {
+        if (tekst == null || tekst.trim().isEmpty()) return tekst;
         try {
-            Cipher sifrarnik = Cipher.getInstance(ALGORITAM);
+            Cipher sifrarnik = Cipher.getInstance(TRANSFORMACIJA);
             sifrarnik.init(Cipher.ENCRYPT_MODE, javniKljuc);
-
             byte[] sifriraniBajtovi = sifrarnik.doFinal(tekst.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(sifriraniBajtovi);
-
         } catch (Exception e) {
-            throw new RuntimeException("Greška pri RSA šifriranju: " + tekst, e);
+            throw new RuntimeException("Greška pri RSA šifriranju: " + e.getMessage(), e);
         }
     }
 
-    public String desifriraj(String sifriraniTekst) {
-        if (sifriraniTekst == null || sifriraniTekst.trim().isEmpty()) {
-            return sifriraniTekst;
-        }
+    public static String desifriraj(String sifriraniTekst) {
+        if (sifriraniTekst == null || sifriraniTekst.trim().isEmpty()) return sifriraniTekst;
         try {
-            Cipher sifrarnik = Cipher.getInstance(ALGORITAM);
+            Cipher sifrarnik = Cipher.getInstance(TRANSFORMACIJA);
             sifrarnik.init(Cipher.DECRYPT_MODE, privatniKljuc);
-
             byte[] originalniBajtovi = sifrarnik.doFinal(
                     Base64.getDecoder().decode(sifriraniTekst)
             );
             return new String(originalniBajtovi, StandardCharsets.UTF_8);
-
         } catch (Exception e) {
-            String porukaGreske = "Greška pri RSA dešifriranju";
-            if (e instanceof javax.crypto.BadPaddingException) {
-                porukaGreske += " (pogrešan ključ ili oštećeni podaci)";
-            }
-            throw new RuntimeException(porukaGreske, e);
+            throw new RuntimeException("Greška pri dešifriranju: " + e.getMessage(), e);
         }
     }
 }

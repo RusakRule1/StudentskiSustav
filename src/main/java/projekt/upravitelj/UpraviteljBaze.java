@@ -7,7 +7,7 @@ import jakarta.persistence.Persistence;
 public class UpraviteljBaze {
     private static EntityManagerFactory emf;
 
-    public static EntityManager dohvatiEntityManager() {
+    public static synchronized EntityManager dohvatiEntityManager() {
         if (emf == null) {
             try {
                 emf = Persistence.createEntityManagerFactory("studentski_sustav");
@@ -19,9 +19,10 @@ public class UpraviteljBaze {
         return emf.createEntityManager();
     }
 
-    public static void zatvori() {
+    public static synchronized void zatvori() {
         if (emf != null && emf.isOpen()) {
             emf.close();
+            emf = null;
         }
     }
 }

@@ -4,15 +4,18 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import projekt.upravitelj.Prijevod;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static projekt.util.UITvornica.hbox;
+import static projekt.util.UITvornica.labela;
+
 public class PorukaHelper {
 
     private static final int TRAJANJE_PORUKE_MS = 3000;
-    private static final int DEFAULT_MAX_SIRINA = 600;
 
     public final Label labela;
     public final HBox kontejner;
@@ -34,21 +37,22 @@ public class PorukaHelper {
     }
 
     private static Label kreirajLabelu() {
-        Label labela = new Label();
-        labela.getStyleClass().add(Stilovi.PORUKA_GRESKA);
-        labela.setAlignment(Pos.CENTER);
-        labela.setVisible(false);
-        return labela;
+        return labela()
+                .stil(Stilovi.PORUKA_GRESKA)
+                .pozicija(Pos.CENTER)
+                .wrapText(true)
+                .vidljivo(false)
+                .build();
     }
 
     private static HBox kreirajKontejner(Label labela) {
-        HBox hbox = new HBox(labela);
-        hbox.setAlignment(Pos.CENTER);
-        hbox.setVisible(false);
-        hbox.setMaxWidth(Double.MAX_VALUE);
-        hbox.setFillHeight(true);
-        HBox.setHgrow(labela, javafx.scene.layout.Priority.ALWAYS);
-        return hbox;
+        return hbox(labela)
+                .pozicija(Pos.CENTER)
+                .maxSirina(Double.MAX_VALUE)
+                .fillVisinu(true)
+                .childGrow(labela, Priority.ALWAYS)
+                .vidljivo(false)
+                .build();
     }
 
     public void prikaziGresku(String kljucGreske) {
@@ -71,19 +75,14 @@ public class PorukaHelper {
         trenutnaPoruka = kljucPoruke;
         labela.setText(prijevod.getPrijevod(kljucPoruke));
 
-        labela.getStyleClass().removeAll(
-                Stilovi.PORUKA_GRESKA,
-                Stilovi.PORUKA_USPJESNO
-        );
-        labela.getStyleClass().add(
-                uspjeh ? Stilovi.PORUKA_USPJESNO : Stilovi.PORUKA_GRESKA
-        );
+        labela.getStyleClass().removeAll(Stilovi.PORUKA_GRESKA, Stilovi.PORUKA_USPJESNO);
+        labela.getStyleClass().add(uspjeh ? Stilovi.PORUKA_USPJESNO : Stilovi.PORUKA_GRESKA);
 
         labela.setVisible(true);
         kontejner.setVisible(true);
 
         if (automatskiSakrij) {
-            startTimer();
+            pokreniTimer();
         }
     }
 
@@ -107,16 +106,15 @@ public class PorukaHelper {
         }
     }
 
-    private void startTimer() {
+    private void pokreniTimer() {
         if (timerPoruke != null) {
             timerPoruke.cancel();
         }
-
         timerPoruke = new Timer(true);
         timerPoruke.schedule(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> sakrijPoruku());
+                Platform.runLater(PorukaHelper.this::sakrijPoruku);
             }
         }, TRAJANJE_PORUKE_MS);
     }

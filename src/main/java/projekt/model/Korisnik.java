@@ -41,7 +41,7 @@ public class Korisnik {
         this.email = email;
         this.lozinkaHash = Hash.hashirajLozinku(lozinka, email);
         this.sifriranoIme = AES.sifriraj(ime);
-        this.sifriranoPrezime = RSA.getInstance().sifriraj(prezime);
+        this.sifriranoPrezime = RSA.sifriraj(prezime);
         this.uloga = uloga;
     }
 
@@ -70,25 +70,21 @@ public class Korisnik {
     }
 
     public String getIme() {
-        if (sifriranoIme == null || sifriranoIme.trim().isEmpty()) {
-            return sifriranoIme;
-        }
+        if (sifriranoIme == null || sifriranoIme.trim().isEmpty()) return "";
         return AES.desifriraj(sifriranoIme);
     }
 
     public void setIme(String ime) {
-        this.sifriranoIme = ime;
+        this.sifriranoIme = (ime == null || ime.trim().isEmpty()) ? "" : AES.sifriraj(ime);
     }
 
     public String getPrezime() {
-        if (sifriranoPrezime == null || sifriranoPrezime.trim().isEmpty()) {
-            return sifriranoPrezime;
-        }
-        return RSA.getInstance().desifriraj(sifriranoPrezime);
+        if (sifriranoPrezime == null || sifriranoPrezime.trim().isEmpty()) return "";
+        return RSA.desifriraj(sifriranoPrezime);
     }
 
     public void setPrezime(String prezime) {
-        this.sifriranoPrezime = prezime;
+        this.sifriranoPrezime = (prezime == null || prezime.trim().isEmpty()) ? "" : RSA.sifriraj(prezime);
     }
 
     public Uloga getUloga() {

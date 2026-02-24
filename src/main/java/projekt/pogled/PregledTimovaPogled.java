@@ -8,7 +8,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -17,145 +16,81 @@ import projekt.servis.TimJsonServis;
 import projekt.upravitelj.UpraviteljPogleda;
 import projekt.util.PorukaHelper;
 import projekt.util.Stilovi;
+import projekt.util.UITvornica;
 
-import java.util.List;
+import static projekt.util.UITvornica.*;
 
 public class PregledTimovaPogled extends OsnovniPogled {
 
     private final TimJsonServis timServis;
-    private final PorukaHelper poruke = PorukaHelper.kreiraj(prijevod);
+    private final PorukaHelper poruke;
 
-    private final Label naslov = new Label();
-    private final TableView<TimJson> tablicaTimova = new TableView<>();
+    private final Label naslov = labela().stil(Stilovi.PODNASLOV).build();
+
+    private final TableColumn<TimJson, String> nazivKolona = kolona("naziv", Stilovi.KOLONA_NAZIV_TIMA);
+    private final TableColumn<TimJson, String> brojKolona = kolona(
+            cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getBrojClanova())),
+            Stilovi.KOLONA_BROJ_CLANOVA
+    );
+    private final TableColumn<TimJson, String> clanoviKolona = kolona(
+            cellData -> new SimpleStringProperty(cellData.getValue().getClanoviFormatted()),
+            Stilovi.KOLONA_CLANOVI_TIMA
+    );
+
     private final ObservableList<TimJson> podaciTimova = FXCollections.observableArrayList();
 
-    private final TableColumn<TimJson, String> nazivKolona = new TableColumn<>();
-    private final TableColumn<TimJson, String> brojKolona = new TableColumn<>();
-    private final TableColumn<TimJson, String> clanoviKolona = new TableColumn<>();
+    private final TableView<TimJson> tablicaTimova = UITvornica.<TimJson>tableView()
+            .kolone(nazivKolona, brojKolona, clanoviKolona)
+            .stavke(podaciTimova)
+            .constrained()
+            .stil(Stilovi.TABLICA_VISINA_VELIKA)
+            .build();
 
-    private final Button noviTimGumb = new Button();
-    private final Button urediTimGumb = new Button();
-    private final Button obrisiTimGumb = new Button();
-    private final Button osvjeziGumb = new Button();
+    private Button noviTimGumb;
+    private Button urediTimGumb;
+    private Button obrisiTimGumb;
+    private Button osvjeziGumb;
 
     public PregledTimovaPogled() {
         super();
         this.timServis = new TimJsonServis();
+        this.poruke = PorukaHelper.kreiraj(prijevod);
+        konfigurirajGumbe();
     }
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox sadrzajBox = new VBox();
-        sadrzajBox.getStyleClass().addAll(
-                Stilovi.RAZMAK_SREDNJI,
-                Stilovi.PADDING_SREDNJI
-        );
-
-        konfigurirajNaslov();
-        konfigurirajTablicu();
         HBox kontroleBox = kreirajKontrole();
 
-        sadrzajBox.getChildren().addAll(
-                naslov,
-                tablicaTimova,
-                poruke.kontejner,
-                kontroleBox
-        );
+        VBox sadrzaj = vbox(naslov, tablicaTimova, poruke.kontejner, kontroleBox)
+                .stil(Stilovi.RAZMAK_SREDNJI, Stilovi.PADDING_SREDNJI)
+                .build();
+
+        VBox.setVgrow(tablicaTimova, Priority.ALWAYS);
 
         ucitajTimove();
         postaviListenere();
 
-        return sadrzajBox;
+        return sadrzaj;
     }
 
-    private void konfigurirajNaslov() {
-        naslov.getStyleClass().add(Stilovi.PODNASLOV);
-    }
-
-    private void konfigurirajTablicu() {
-        tablicaTimova.getColumns().clear();
-
-        konfigurirajKolone();
-        postaviSirineKolona();
-
-        tablicaTimova.setItems(podaciTimova);
-        tablicaTimova.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-        VBox.setVgrow(tablicaTimova, Priority.ALWAYS);
-        tablicaTimova.setStyle(Stilovi.TABLICA_VISINA_VELIKA);
-    }
-
-    private void konfigurirajKolone() {
-        nazivKolona.setCellValueFactory(new PropertyValueFactory<>("naziv"));
-
-        brojKolona.setCellValueFactory(cellData ->
-                new SimpleStringProperty(
-                        String.valueOf(cellData.getValue().getBrojClanova())
-                )
-        );
-
-        clanoviKolona.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getClanoviFormatted())
-        );
-
-        tablicaTimova.getColumns().addAll(nazivKolona, brojKolona, clanoviKolona);
-    }
-
-    private void postaviSirineKolona() {
-        nazivKolona.getStyleClass().add(Stilovi.KOLONA_NAZIV_TIMA);
-        brojKolona.getStyleClass().add(Stilovi.KOLONA_BROJ_CLANOVA);
-        clanoviKolona.getStyleClass().add(Stilovi.KOLONA_CLANOVI_TIMA);
+    private void konfigurirajGumbe() {
+        noviTimGumb = gumb(Stilovi.GUMB_PLAVI, this::otvoriKreiranjeTima).build();
+        urediTimGumb = gumb(Stilovi.GUMB_ZELENI, this::otvoriUredivanjeTima).onemogucen(true).build();
+        obrisiTimGumb = gumb(Stilovi.GUMB_CRVENI, this::obrisiTim).onemogucen(true).build();
+        osvjeziGumb = gumb(Stilovi.GUMB_ZELENI, this::ucitajTimove).build();
     }
 
     private HBox kreirajKontrole() {
-        HBox kontroleBox = new HBox();
-        kontroleBox.getStyleClass().add(Stilovi.RAZMAK_KONTROLE);
-        kontroleBox.setAlignment(Pos.CENTER);
-
-        konfigurirajNoviTimGumb();
-        konfigurirajUrediTimGumb();
-        konfigurirajObrisiTimGumb();
-        konfigurirajOsvjeziGumb();
-
-        kontroleBox.getChildren().addAll(
-                noviTimGumb,
-                urediTimGumb,
-                obrisiTimGumb,
-                osvjeziGumb
-        );
-
-        return kontroleBox;
-    }
-
-    private void konfigurirajNoviTimGumb() {
-        noviTimGumb.getStyleClass().add(Stilovi.GUMB_PLAVI);
-        noviTimGumb.setOnAction(e -> otvoriKreiranjeTima());
-    }
-
-    private void konfigurirajUrediTimGumb() {
-        urediTimGumb.getStyleClass().add(Stilovi.GUMB_ZELENI);
-        urediTimGumb.setOnAction(e -> otvoriUredivanjeTima());
-        urediTimGumb.setDisable(true);
-    }
-
-    private void konfigurirajObrisiTimGumb() {
-        obrisiTimGumb.getStyleClass().add(Stilovi.GUMB_CRVENI);
-        obrisiTimGumb.setOnAction(e -> obrisiTim());
-        obrisiTimGumb.setDisable(true);
-    }
-
-    private void konfigurirajOsvjeziGumb() {
-        osvjeziGumb.getStyleClass().add(Stilovi.GUMB_ZELENI);
-        osvjeziGumb.setOnAction(e -> ucitajTimove());
+        return hbox(noviTimGumb, urediTimGumb, obrisiTimGumb, osvjeziGumb)
+                .pozicija(Pos.CENTER)
+                .stil(Stilovi.RAZMAK_KONTROLE)
+                .build();
     }
 
     private void postaviListenere() {
-        postaviListenerZaSelekciju();
-    }
-
-    private void postaviListenerZaSelekciju() {
         tablicaTimova.getSelectionModel().selectedItemProperty().addListener(
-                (observable, stariTim, noviTim) -> azurirajOsjetljivostGumba(noviTim)
+                (obs, stari, novi) -> azurirajOsjetljivostGumba(novi)
         );
     }
 
@@ -168,12 +103,8 @@ public class PregledTimovaPogled extends OsnovniPogled {
     private void ucitajTimove() {
         try {
             podaciTimova.clear();
-
-            List<TimJson> timovi = timServis.dohvatiSveTimove();
-            podaciTimova.addAll(timovi);
-
+            podaciTimova.addAll(timServis.dohvatiSveTimove());
             azurirajPlaceholder();
-
         } catch (Exception e) {
             System.err.println("Greška pri učitavanju timova: " + e.getMessage());
             poruke.prikaziGreskuSTimerom("greska_ucitavanje_timova");
@@ -182,9 +113,7 @@ public class PregledTimovaPogled extends OsnovniPogled {
 
     private void azurirajPlaceholder() {
         if (podaciTimova.isEmpty()) {
-            tablicaTimova.setPlaceholder(
-                    new Label(prijevod.getPrijevod("nema_timova"))
-            );
+            tablicaTimova.setPlaceholder(labela(prijevod.getPrijevod("nema_timova")).build());
         }
     }
 
@@ -198,8 +127,7 @@ public class PregledTimovaPogled extends OsnovniPogled {
     }
 
     private void obrisiTim() {
-        TimJson odabraniTim = tablicaTimova.getSelectionModel().getSelectedItem();
-        izvrsiBrisanjeTima(odabraniTim);
+        izvrsiBrisanjeTima(tablicaTimova.getSelectionModel().getSelectedItem());
     }
 
     private void izvrsiBrisanjeTima(TimJson tim) {
@@ -235,7 +163,6 @@ public class PregledTimovaPogled extends OsnovniPogled {
         nazivKolona.setText(prijevod.getPrijevod("tim_naziv"));
         brojKolona.setText(prijevod.getPrijevod("tim_broj_clanova"));
         clanoviKolona.setText(prijevod.getPrijevod("tim_clanovi"));
-
         azurirajPlaceholder();
     }
 

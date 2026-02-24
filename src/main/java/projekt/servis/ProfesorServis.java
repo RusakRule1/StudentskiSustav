@@ -1,8 +1,8 @@
 package projekt.servis;
 
-import projekt.baza.repozitorij.ProfesorRepozitorij;
 import projekt.model.Predmet;
 import projekt.model.Profesor;
+import projekt.repozitorij.ProfesorRepozitorij;
 
 import java.util.List;
 

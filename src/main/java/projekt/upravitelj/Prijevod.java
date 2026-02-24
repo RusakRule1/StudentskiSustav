@@ -58,21 +58,23 @@ public class Prijevod {
     }
 
     public String getPrijevod(String kljuc, String jezik) {
-        if (kljuc == null || kljuc.trim().isEmpty()) {
-            return "";
-        }
+        if (kljuc == null || kljuc.trim().isEmpty()) return "";
 
         Map<String, String> mapZaKljuc = prijevodi.get(kljuc);
-
         if (mapZaKljuc == null) {
             System.err.println("Prijevod za ključ '" + kljuc + "' nije pronađen");
             return kljuc;
         }
 
-        return mapZaKljuc.getOrDefault(jezik, kljuc);
-    }
+        String prijevod = mapZaKljuc.get(jezik);
+        if (prijevod != null) return prijevod;
 
-    public JNIAdapter getJniAdapter() {
-        return jniAdapter;
+        String defaultniJezik = Konfiguracija.getPodrazumijevaniJezik();
+        if (!jezik.equals(defaultniJezik)) {
+            prijevod = mapZaKljuc.get(defaultniJezik);
+            if (prijevod != null) return prijevod;
+        }
+
+        return kljuc;
     }
 }

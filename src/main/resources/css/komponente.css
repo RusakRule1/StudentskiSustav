@@ -34,14 +34,6 @@
     -fx-background-color: #c0392b;
 }
 
-.gumb-zuti {
-    -fx-background-color: #f39c12;
-}
-
-.gumb-zuti:hover {
-    -fx-background-color: #e67e22;
-}
-
 .gumb-onemogucen {
     -fx-background-color: #95a5a6;
     -fx-cursor: default;
@@ -125,18 +117,22 @@
 }
 
 /* ========== CHECKBOXOVI ========== */
-.checkbox {
+.check-box {
     -fx-font-family: "Arial", sans-serif;
     -fx-font-size: 13px;
 }
 
-.checkbox .box {
+.check-box .text {
+    -fx-fill: #000000;
+}
+
+.check-box .box {
     -fx-background-color: white;
     -fx-border-color: #bdc3c7;
     -fx-border-radius: 3px;
 }
 
-.checkbox:selected .mark {
+.check-box:selected .mark {
     -fx-background-color: #3498db;
 }
 
@@ -172,6 +168,10 @@
     -fx-border-radius: 10px;
     -fx-background-radius: 10px;
     -fx-padding: 25px;
+    -fx-max-width: 600px;
+    -fx-pref-width: 600px;
+    -fx-min-width: 300px;
+    -fx-alignment: center;
 }
 
 .kartica-sjena {
@@ -180,6 +180,7 @@
 
 /* ========== MREŽA ZA FORME ========== */
 .mreza-forma {
+    -fx-spacing: 15px;
     -fx-hgap: 15px;
     -fx-vgap: 15px;
     -fx-alignment: center;
@@ -187,49 +188,38 @@
 
 /* ========== PORUKE ========== */
 .poruka-greska {
+    -fx-min-height: 60px;
     -fx-text-fill: #e74c3c;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-wrap-text: false;
-    -fx-max-width: 600px;
 }
 
 .poruka-uspjesno {
+    -fx-min-height: 60px;
     -fx-text-fill: #2ecc71;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-wrap-text: false;
-    -fx-max-width: 600px;
-}
-
-/* ========== RAZDVAJAČI ========== */
-.razdvajac-vodoravni {
-    -fx-background-color: #bdc3c7;
-    -fx-pref-height: 1px;
-    -fx-padding: 5px 0;
-}
-
-.razdvajac-okomit {
-    -fx-background-color: #bdc3c7;
-    -fx-pref-width: 1px;
-    -fx-padding: 0 5px;
 }
 
 /* ========== VISINE TABLICA I LISTI ========== */
 .tablica-visina-velika {
     -fx-pref-height: 300px;
+    -fx-min-height: 300px;
 }
 
 .tablica-visina-srednja {
     -fx-pref-height: 250px;
+    -fx-min-height: 250px;
 }
 
 .tablica-visina-mala {
     -fx-pref-height: 150px;
+    -fx-min-height: 150px;
 }
 
 .lista-visina {
     -fx-pref-height: 300px;
+    -fx-min-height: 100px;
 }
 
 .table-view .column-header .label {
@@ -241,9 +231,6 @@
 
 /* Scroll pane koji popunjava preostali prostor */
 .scroll-pane-sadrzaj {
-    -fx-fit-to-width: true;
-    -fx-fit-to-height: true;
-    -fx-pannable: true;
     -fx-background: transparent;
     -fx-background-color: transparent;
     -fx-border-width: 0;
@@ -275,9 +262,20 @@
 /* ========== Sekcije ========== */
 .sekcija {
     -fx-spacing: 10px;
-    -fx-alignment: top-left;
 }
 
 .radio-button {
     -fx-text-fill: #000000;
+}
+
+.glavni-vbox {
+    -fx-spacing: 20px;
+    -fx-padding: 20px;
+    -fx-alignment: top-left;
+}
+
+.prijava-vbox {
+    -fx-spacing: 20px;
+    -fx-padding: 20px;
+    -fx-alignment: center;
 }

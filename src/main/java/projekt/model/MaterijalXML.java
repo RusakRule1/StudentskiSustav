@@ -2,6 +2,8 @@ package projekt.model;
 
 import jakarta.xml.bind.annotation.*;
 
+import java.util.UUID;
+
 @XmlRootElement(name = "materijal")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MaterijalXML {
@@ -16,7 +18,7 @@ public class MaterijalXML {
     private TipMaterijalaXML tip;
 
     public MaterijalXML() {
-        this.id = java.util.UUID.randomUUID().toString();
+        this.id = UUID.randomUUID().toString();
     }
 
     public MaterijalXML(String naziv, TipMaterijalaXML tip) {
@@ -50,6 +52,6 @@ public class MaterijalXML {
     }
 
     public String getTipPrikaz() {
-        return tip.getKljucPrijevoda();
+        return tip != null ? tip.getKljucPrijevoda() : "";
     }
 }

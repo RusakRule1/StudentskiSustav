@@ -10,9 +10,6 @@ public class gen {
         System.out.println("GENERIRANJE SQL ZA BAZU SA ŠIFRIRANJEM");
         System.out.println("=========================================\n");
 
-        // Inicijaliziraj RSA (generiraj ključeve)
-        RSA rsa = RSA.getInstance();
-
         // Studenti - 30 studenata ukupno (10 originalnih + 20 novih)
         String[] studenti = {
                 // Originalnih 10
@@ -87,7 +84,7 @@ public class gen {
 
             // Šifriraj ime i prezime
             String sifriranoIme = AES.sifriraj(ime);
-            String sifriranoPrezime = rsa.sifriraj(prezime);
+            String sifriranoPrezime = RSA.sifriraj(prezime);
 
             System.out.print("  ('" + email + "', '" + hash + "', '" +
                     escapeSQL(sifriranoIme) + "', '" +
@@ -107,7 +104,7 @@ public class gen {
 
             // Šifriraj ime i prezime
             String sifriranoIme = AES.sifriraj(ime);
-            String sifriranoPrezime = rsa.sifriraj(prezime);
+            String sifriranoPrezime = RSA.sifriraj(prezime);
 
             System.out.print("  ('" + email + "', '" + hash + "', '" +
                     escapeSQL(sifriranoIme) + "', '" +
@@ -123,7 +120,7 @@ public class gen {
         String adminLozinka = "admin1";
         String adminHash = Hash.hashirajLozinku(adminLozinka, admin);
         String sifriranoAdminIme = AES.sifriraj(adminIme);
-        String sifriranoAdminPrezime = rsa.sifriraj(adminPrezime);
+        String sifriranoAdminPrezime = RSA.sifriraj(adminPrezime);
 
         System.out.println("  ('" + admin + "', '" + adminHash + "', '" +
                 escapeSQL(sifriranoAdminIme) + "', '" +
@@ -186,24 +183,6 @@ public class gen {
         System.out.println("Profesori koriste: profesor1 do profesor10");
         System.out.println("Admin koristi: admin1");
         System.out.println("=========================================");
-
-        // Test dešifriranja
-        System.out.println("\n=========================================");
-        System.out.println("TEST DEŠIFRIRANJA:");
-        System.out.println("=========================================");
-        System.out.println("Test za prvog studenta:");
-        System.out.println("Original ime: " + getImeStudenta(0));
-        System.out.println("Original prezime: " + getPrezimeStudenta(0));
-        System.out.println("AES šifrirano ime: " + AES.sifriraj(getImeStudenta(0)).substring(0, 50) + "...");
-        System.out.println("RSA šifrirano prezime: " + rsa.sifriraj(getPrezimeStudenta(0)).substring(0, 50) + "...");
-        System.out.println("AES dešifrirano: " + AES.desifriraj(AES.sifriraj(getImeStudenta(0))));
-        System.out.println("RSA dešifrirano: " + rsa.desifriraj(rsa.sifriraj(getPrezimeStudenta(0))));
-
-        System.out.println("\nTest za posljednjeg studenta:");
-        System.out.println("Original ime: " + getImeStudenta(29));
-        System.out.println("Original prezime: " + getPrezimeStudenta(29));
-        System.out.println("AES dešifrirano: " + AES.desifriraj(AES.sifriraj(getImeStudenta(29))));
-        System.out.println("RSA dešifrirano: " + rsa.desifriraj(rsa.sifriraj(getPrezimeStudenta(29))));
     }
 
     private static String getImeStudenta(int index) {

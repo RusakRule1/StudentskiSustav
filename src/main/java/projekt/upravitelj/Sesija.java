@@ -5,7 +5,6 @@ import projekt.model.Korisnik;
 public class Sesija {
 
     private static Sesija instanca;
-
     private Korisnik prijavljeniKorisnik;
 
     private Sesija() {
@@ -28,9 +27,5 @@ public class Sesija {
 
     public void odjaviKorisnika() {
         this.prijavljeniKorisnik = null;
-    }
-
-    public boolean jePrijavljen() {
-        return prijavljeniKorisnik != null;
     }
 }

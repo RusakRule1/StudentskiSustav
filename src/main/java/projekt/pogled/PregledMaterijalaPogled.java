@@ -1,54 +1,84 @@
 package projekt.pogled;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import projekt.model.*;
+import projekt.model.MaterijalXML;
+import projekt.model.Predmet;
+import projekt.model.Profesor;
+import projekt.model.TipMaterijalaXML;
 import projekt.servis.MaterijalXMLServis;
 import projekt.servis.PredmetServis;
 import projekt.upravitelj.Sesija;
 import projekt.util.PorukaHelper;
 import projekt.util.Stilovi;
+import projekt.util.UITvornica;
 
 import java.util.List;
+
+import static projekt.util.UITvornica.*;
 
 public class PregledMaterijalaPogled extends OsnovniPogled {
 
     private final PredmetServis predmetServis;
     private final MaterijalXMLServis materijalServis;
     private final Profesor profesor;
-    private final PorukaHelper poruke = PorukaHelper.kreiraj(prijevod);
+    private final PorukaHelper poruke;
 
     private final ObservableList<Predmet> predmetiProfesora = FXCollections.observableArrayList();
     private final ObservableList<MaterijalXML> materijaliPredmeta = FXCollections.observableArrayList();
 
-    private final Label naslov = new Label();
-    private final Label materijaliLabel = new Label();
+    private final Label naslov = labela().stil(Stilovi.PODNASLOV).build();
+    private final Label materijaliLabel = labela().stil(Stilovi.PODNASLOV).build();
 
-    private final TableView<Predmet> tablicaPredmeta = new TableView<>();
-    private final TableView<MaterijalXML> tablicaMaterijala = new TableView<>();
+    private final TableColumn<Predmet, String> nazivPredmetaKolona = kolona("naziv", Stilovi.KOLONA_NAZIV_PREDMETA);
+    private final TableColumn<Predmet, String> sifraPredmetaKolona = kolona("sifra", Stilovi.KOLONA_SIFRA_PREDMETA);
+    private final TableColumn<Predmet, Integer> ectsPredmetaKolona = kolona("ectsBodovi", Stilovi.KOLONA_ECTS_PREDMETA);
+    private final TableColumn<Predmet, String> semestarPredmetaKolona = kolona("semestar", Stilovi.KOLONA_SEMESTAR_PREDMETA);
 
-    private final TableColumn<Predmet, String> nazivPredmetaKolona = new TableColumn<>();
-    private final TableColumn<Predmet, String> sifraPredmetaKolona = new TableColumn<>();
-    private final TableColumn<Predmet, Integer> ectsPredmetaKolona = new TableColumn<>();
-    private final TableColumn<Predmet, String> semestarPredmetaKolona = new TableColumn<>();
+    private final TableView<Predmet> tablicaPredmeta = UITvornica.<Predmet>tableView()
+            .kolone(nazivPredmetaKolona, sifraPredmetaKolona, ectsPredmetaKolona, semestarPredmetaKolona)
+            .stavke(predmetiProfesora)
+            .constrained()
+            .stil(Stilovi.TABLICA_VISINA_MALA)
+            .build();
 
-    private final TableColumn<MaterijalXML, String> nazivMaterijalKolona = new TableColumn<>();
-    private final TableColumn<MaterijalXML, String> tipMaterijalKolona = new TableColumn<>();
+    private final TableColumn<MaterijalXML, String> nazivMaterijalKolona = kolona("naziv");
+    private final TableColumn<MaterijalXML, String> tipMaterijalKolona = kolona(
+            cellData -> {
+                TipMaterijalaXML tip = cellData.getValue().getTip();
+                String prevedeniTip = tip != null ? prijevod.getPrijevod(tip.getKljucPrijevoda()) : "";
+                return new SimpleStringProperty(prevedeniTip);
+            }
+    );
 
-    private final Label nazivLabel = new Label();
-    private final Label tipLabel = new Label();
-    private final TextField unosNaziva = new TextField();
-    private final ComboBox<TipMaterijalaXML> tipComboBox = new ComboBox<>();
+    private final TableView<MaterijalXML> tablicaMaterijala = UITvornica.<MaterijalXML>tableView()
+            .kolone(nazivMaterijalKolona, tipMaterijalKolona)
+            .stavke(materijaliPredmeta)
+            .constrained()
+            .stil(Stilovi.TABLICA_VISINA_MALA)
+            .build();
 
-    private final Button spremiGumb = new Button();
-    private final Button urediGumb = new Button();
-    private final Button izbrisiGumb = new Button();
+    private final Label nazivLabel = labela().build();
+    private final Label tipLabel = labela().build();
+    private final TextField unosNaziva = textField()
+            .stil(Stilovi.POLJE_SIRINA_VELIKA, Stilovi.POLJE_TEKSTA)
+            .onemogucen(true)
+            .build();
+    private final ComboBox<TipMaterijalaXML> tipComboBox = UITvornica.<TipMaterijalaXML>comboBox()
+            .stil(Stilovi.POLJE_SIRINA_COMBO)
+            .onemogucen(true)
+            .stavke(TipMaterijalaXML.values())
+            .build();
+
+    private Button spremiGumb;
+    private Button urediGumb;
+    private Button izbrisiGumb;
 
     private MaterijalXML trenutnoUredjivani = null;
 
@@ -56,84 +86,39 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         super();
         this.predmetServis = new PredmetServis();
         this.materijalServis = new MaterijalXMLServis();
-
-        Korisnik prijavljeniKorisnik = Sesija.getInstanca().getPrijavljeniKorisnik();
-        this.profesor = (Profesor) prijavljeniKorisnik;
+        this.profesor = (Profesor) Sesija.getInstanca().getPrijavljeniKorisnik();
+        this.poruke = PorukaHelper.kreiraj(prijevod);
+        konfigurirajGumbe();
+        postaviCellFactoryZaComboBox();
+        konfigurirajTablicuMaterijala();
     }
 
     @Override
     protected VBox kreirajSadrzaj() {
-        VBox sadrzajBox = new VBox();
-        sadrzajBox.getStyleClass().addAll(
-                Stilovi.RAZMAK_SREDNJI,
-                Stilovi.PADDING_SREDNJI
-        );
-
-        konfigurirajNaslov();
-        konfigurirajTablicuPredmeta();
-        konfigurirajTablicuMaterijala();
-
         HBox unosBox = kreirajUnosBox();
         HBox akcijeBox = kreirajAkcijeBox();
+
+        VBox sadrzaj = vbox(naslov, tablicaPredmeta, materijaliLabel, tablicaMaterijala,
+                unosBox, poruke.kontejner, akcijeBox)
+                .stil(Stilovi.RAZMAK_SREDNJI, Stilovi.PADDING_SREDNJI)
+                .build();
 
         VBox.setVgrow(tablicaPredmeta, Priority.ALWAYS);
         VBox.setVgrow(tablicaMaterijala, Priority.ALWAYS);
 
-        sadrzajBox.getChildren().addAll(
-                naslov,
-                tablicaPredmeta,
-                materijaliLabel,
-                tablicaMaterijala,
-                unosBox,
-                poruke.kontejner,
-                akcijeBox
-        );
-
         ucitajPredmeteProfesora();
-        konfigurirajTipComboBox();
         postaviListenere();
 
-        return sadrzajBox;
+        return sadrzaj;
     }
 
-    private void konfigurirajNaslov() {
-        naslov.getStyleClass().add(Stilovi.PODNASLOV);
-        materijaliLabel.getStyleClass().add(Stilovi.PODNASLOV);
-    }
-
-    private void konfigurirajTablicuPredmeta() {
-        tablicaPredmeta.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-        nazivPredmetaKolona.setCellValueFactory(new PropertyValueFactory<>("naziv"));
-        sifraPredmetaKolona.setCellValueFactory(new PropertyValueFactory<>("sifra"));
-        ectsPredmetaKolona.setCellValueFactory(new PropertyValueFactory<>("ectsBodovi"));
-        semestarPredmetaKolona.setCellValueFactory(new PropertyValueFactory<>("semestar"));
-
-        nazivPredmetaKolona.getStyleClass().add(Stilovi.KOLONA_NAZIV_PREDMETA);
-        sifraPredmetaKolona.getStyleClass().add(Stilovi.KOLONA_SIFRA_PREDMETA);
-        ectsPredmetaKolona.getStyleClass().add(Stilovi.KOLONA_ECTS_PREDMETA);
-        semestarPredmetaKolona.getStyleClass().add(Stilovi.KOLONA_SEMESTAR_PREDMETA);
-
-        tablicaPredmeta.getColumns().addAll(
-                nazivPredmetaKolona, sifraPredmetaKolona,
-                ectsPredmetaKolona, semestarPredmetaKolona
-        );
-        tablicaPredmeta.setItems(predmetiProfesora);
+    private void konfigurirajGumbe() {
+        spremiGumb = gumb(Stilovi.GUMB_PLAVI, this::obradiSpremanje).onemogucen(true).build();
+        urediGumb = gumb(Stilovi.GUMB_ZELENI, this::omoguciUredjivanje).onemogucen(true).build();
+        izbrisiGumb = gumb(Stilovi.GUMB_CRVENI, this::obradiBrisanje).onemogucen(true).build();
     }
 
     private void konfigurirajTablicuMaterijala() {
-        tablicaMaterijala.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-        nazivMaterijalKolona.setCellValueFactory(new PropertyValueFactory<>("naziv"));
-        tipMaterijalKolona.setCellValueFactory(cellData -> {
-            TipMaterijalaXML tip = cellData.getValue().getTip();
-            String prevedeniTip = tip != null ? prijevod.getPrijevod(tip.getKljucPrijevoda()) : "";
-            return new javafx.beans.property.SimpleStringProperty(prevedeniTip);
-        });
-
-        tablicaMaterijala.getColumns().addAll(nazivMaterijalKolona, tipMaterijalKolona);
-        tablicaMaterijala.setItems(materijaliPredmeta);
-
         tablicaMaterijala.setRowFactory(tv -> {
             TableRow<MaterijalXML> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -146,32 +131,17 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
     }
 
     private HBox kreirajUnosBox() {
-        HBox unosBox = new HBox();
-        unosBox.setAlignment(Pos.CENTER_LEFT);
-        unosBox.getStyleClass().addAll(
-                Stilovi.RAZMAK_UNOS
-        );
-
-        unosNaziva.getStyleClass().addAll(
-                Stilovi.POLJE_SIRINA_VELIKA
-        );
-        tipComboBox.getStyleClass().addAll(
-                Stilovi.POLJE_SIRINA_COMBO
-        );
-
-        unosNaziva.getStyleClass().add(Stilovi.POLJE_TEKSTA);
-
-        unosBox.getChildren().addAll(
-                nazivLabel, unosNaziva,
-                tipLabel, tipComboBox
-        );
-
-        return unosBox;
+        return hbox(nazivLabel, unosNaziva, tipLabel, tipComboBox)
+                .pozicija(Pos.CENTER_LEFT)
+                .stil(Stilovi.RAZMAK_UNOS)
+                .build();
     }
 
-    private void konfigurirajTipComboBox() {
-        tipComboBox.getItems().setAll(TipMaterijalaXML.values());
-        postaviCellFactoryZaComboBox();
+    private HBox kreirajAkcijeBox() {
+        return hbox(spremiGumb, urediGumb, izbrisiGumb)
+                .pozicija(Pos.CENTER)
+                .stil(Stilovi.RAZMAK_GUMBI)
+                .build();
     }
 
     private void postaviCellFactoryZaComboBox() {
@@ -190,32 +160,6 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
                 setText(empty || tip == null ? null : prijevod.getPrijevod(tip.getKljucPrijevoda()));
             }
         });
-    }
-
-    private HBox kreirajAkcijeBox() {
-        HBox akcijeBox = new HBox();
-        unosNaziva.getStyleClass().addAll(
-                Stilovi.RAZMAK_AKCIJE
-        );
-        akcijeBox.setAlignment(Pos.CENTER);
-        akcijeBox.getStyleClass().add(Stilovi.RAZMAK_GUMBI);
-
-        spremiGumb.getStyleClass().add(Stilovi.GUMB_PLAVI);
-        urediGumb.getStyleClass().add(Stilovi.GUMB_ZELENI);
-        izbrisiGumb.getStyleClass().add(Stilovi.GUMB_CRVENI);
-
-        urediGumb.setDisable(true);
-        izbrisiGumb.setDisable(true);
-        spremiGumb.setDisable(true);
-        unosNaziva.setDisable(true);
-        tipComboBox.setDisable(true);
-
-        spremiGumb.setOnAction(e -> obradiSpremanje());
-        urediGumb.setOnAction(e -> omoguciUredjivanje());
-        izbrisiGumb.setOnAction(e -> obradiBrisanje());
-
-        akcijeBox.getChildren().addAll(spremiGumb, urediGumb, izbrisiGumb);
-        return akcijeBox;
     }
 
     private void postaviListenere() {
@@ -273,11 +217,11 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
 
     private void ucitajPredmeteProfesora() {
         try {
-            List<Predmet> predmeti = predmetServis.dohvatiPredmeteProfesora(profesor.getId());
+            List<Predmet> predmeti = predmetServis.pronadjiPredmeteProfesora(profesor.getId());
 
             if (predmeti == null || predmeti.isEmpty()) {
                 predmetiProfesora.clear();
-                tablicaPredmeta.setPlaceholder(new Label(prijevod.getPrijevod("nema_predmeta")));
+                tablicaPredmeta.setPlaceholder(labela(prijevod.getPrijevod("nema_predmeta")).build());
                 return;
             }
 
@@ -286,23 +230,23 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         } catch (Exception e) {
             System.err.println("Greška pri učitavanju predmeta: " + e.getMessage());
             predmetiProfesora.clear();
-            tablicaPredmeta.setPlaceholder(new Label(prijevod.getPrijevod("greska_ucitavanje_predmeta")));
+            tablicaPredmeta.setPlaceholder(labela(prijevod.getPrijevod("greska_ucitavanje_predmeta")).build());
         }
     }
 
     private void ucitajMaterijalePredmeta(Predmet predmet) {
         if (predmet == null) {
             materijaliPredmeta.clear();
-            tablicaMaterijala.setPlaceholder(new Label(prijevod.getPrijevod("odaberite_predmet")));
+            tablicaMaterijala.setPlaceholder(labela(prijevod.getPrijevod("odaberite_predmet")).build());
             return;
         }
 
         try {
-            List<MaterijalXML> materijali = materijalServis.dohvatiMaterijaleZaPredmet(predmet.getId());
+            List<MaterijalXML> materijali = materijalServis.pronadjiMaterijaleZaPredmet(predmet.getId());
 
             if (materijali == null || materijali.isEmpty()) {
                 materijaliPredmeta.clear();
-                tablicaMaterijala.setPlaceholder(new Label(prijevod.getPrijevod("nema_materijala")));
+                tablicaMaterijala.setPlaceholder(labela(prijevod.getPrijevod("nema_materijala")).build());
                 return;
             }
 
@@ -311,7 +255,7 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         } catch (Exception e) {
             System.err.println("Greška pri učitavanju materijala: " + e.getMessage());
             materijaliPredmeta.clear();
-            tablicaMaterijala.setPlaceholder(new Label(prijevod.getPrijevod("greska_ucitavanje_materijala")));
+            tablicaMaterijala.setPlaceholder(labela(prijevod.getPrijevod("greska_ucitavanje_materijala")).build());
         }
     }
 
@@ -451,12 +395,8 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
     }
 
     private void osvjeziGumbe() {
-        if (jeUredjivanje()) {
-            spremiGumb.setText(prijevod.getPrijevod("azuriraj_materijal_gumb"));
-        } else {
-            spremiGumb.setText(prijevod.getPrijevod("spremi_izmjene_gumb"));
-        }
-
+        String kljuc = jeUredjivanje() ? "azuriraj_materijal_gumb" : "spremi_izmjene_gumb";
+        spremiGumb.setText(prijevod.getPrijevod(kljuc));
         urediGumb.setText(prijevod.getPrijevod("uredi_materijal_gumb"));
         izbrisiGumb.setText(prijevod.getPrijevod("izbrisi_materijal_gumb"));
     }
@@ -468,12 +408,12 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
     }
 
     private void osvjeziPlaceholdere() {
-        tablicaPredmeta.setPlaceholder(new Label(prijevod.getPrijevod("nema_predmeta")));
+        tablicaPredmeta.setPlaceholder(labela(prijevod.getPrijevod("nema_predmeta")).build());
 
         if (tablicaPredmeta.getSelectionModel().getSelectedItem() == null) {
-            tablicaMaterijala.setPlaceholder(new Label(prijevod.getPrijevod("odaberite_predmet")));
+            tablicaMaterijala.setPlaceholder(labela(prijevod.getPrijevod("odaberite_predmet")).build());
         } else {
-            tablicaMaterijala.setPlaceholder(new Label(prijevod.getPrijevod("nema_materijala")));
+            tablicaMaterijala.setPlaceholder(labela(prijevod.getPrijevod("nema_materijala")).build());
         }
     }
 }
