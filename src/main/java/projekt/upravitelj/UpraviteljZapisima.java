@@ -41,6 +41,12 @@ public class UpraviteljZapisima {
     }
 
     public void dodajZapis(Zapis zapis) {
+        try {
+            Files.createDirectories(DIREKTORIJ_ZAPISA);
+        } catch (IOException e) {
+            System.err.println("Ne mogu kreirati direktorij za zapise: " + e.getMessage());
+            return;
+        }
         try (DataOutputStream dos = new DataOutputStream(
                 new BufferedOutputStream(
                         new FileOutputStream(ZAPIS_PATH.toFile(), true)))) {
@@ -76,11 +82,25 @@ public class UpraviteljZapisima {
                             Instant.ofEpochMilli(epochMilli), ZoneOffset.UTC);
 
                     int korisnikLen = dis.readInt();
+                    if (korisnikLen < 0 || korisnikLen > 10_000) {
+                        System.err.println("Nevažeća duljina zapisa, datoteka je korumpirana");
+                        break;
+                    }
                     String korisnik = new String(dis.readNBytes(korisnikLen), StandardCharsets.UTF_8);
 
-                    ZapisAkcija akcija = ZapisAkcija.values()[dis.readInt()];
+                    int akcijaOrdinal = dis.readInt();
+                    ZapisAkcija[] sveAkcije = ZapisAkcija.values();
+                    if (akcijaOrdinal < 0 || akcijaOrdinal >= sveAkcije.length) {
+                        System.err.println("Nepoznata akcija u zapisu (ordinal=" + akcijaOrdinal + "), zapis preskočen");
+                        break;
+                    }
+                    ZapisAkcija akcija = sveAkcije[akcijaOrdinal];
 
                     int detaljiLen = dis.readInt();
+                    if (detaljiLen < 0 || detaljiLen > 100_000) {
+                        System.err.println("Nevažeća duljina detalja, datoteka je korumpirana");
+                        break;
+                    }
                     String detalji = new String(dis.readNBytes(detaljiLen), StandardCharsets.UTF_8);
 
                     zapisi.add(new Zapis(korisnik, akcija, detalji, vrijeme));

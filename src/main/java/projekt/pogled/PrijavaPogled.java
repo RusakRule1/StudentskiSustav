@@ -51,7 +51,7 @@ public class PrijavaPogled extends OsnovniPogled {
                 .stil(Stilovi.GUMB_SIRINA_SREDNJA)
                 .build();
 
-        VBox sadrzaj = vbox(podnaslovTekst, kreirajFormu(), poruke.kontejner, prijavaGumb)
+        VBox sadrzaj = vbox(podnaslovTekst, kreirajFormu(), poruke.getKontejner(), prijavaGumb)
                 .stil(Stilovi.PRIJAVA_VBOX)
                 .build();
 
@@ -148,7 +148,7 @@ public class PrijavaPogled extends OsnovniPogled {
     private void obradiUspjesnuPrijavu(Korisnik korisnik, String email) {
         Sesija.getInstanca().postaviPrijavljenogKorisnika(korisnik);
         obradiZapamtiMe(email);
-        zatvoriSveProzore();
+        ocistiResurse();
         zabiljeziPrijavu(korisnik.getEmail(), korisnik.getUloga());
         preusmjeriPoUlozi(korisnik.getUloga());
     }
@@ -204,7 +204,12 @@ public class PrijavaPogled extends OsnovniPogled {
         prijavaGumb.getStyleClass().add(Stilovi.GUMB_PLAVI);
     }
 
-    private void zatvoriSveProzore() {
+    private void ocistiResurse() {
+        poruke.cleanup();
+    }
+
+    @Override
+    public void priSakrivanju() {
         poruke.cleanup();
     }
 

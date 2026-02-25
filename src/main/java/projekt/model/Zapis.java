@@ -61,6 +61,9 @@ public class Zapis {
     @Override
     public String toString() {
         return String.format("[%s] %s - %s: %s",
-                vrijeme.toString(), korisnik, akcija, detalji);
+                vrijeme != null ? vrijeme.toString() : "N/A",
+                korisnik,
+                akcija,
+                detalji);
     }
 }

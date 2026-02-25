@@ -27,15 +27,16 @@ public class PregledTimovaPogled extends OsnovniPogled {
 
     private final Label naslov = labela().stil(Stilovi.PODNASLOV).build();
 
-    private final TableColumn<TimJson, String> nazivKolona = kolona("naziv", Stilovi.KOLONA_NAZIV_TIMA);
-    private final TableColumn<TimJson, String> brojKolona = kolona(
+    private final TableColumn<TimJson, String> nazivKolona = UITvornica.<TimJson, String>kolona("naziv", Stilovi.KOLONA_NAZIV_TIMA).build();
+    private final TableColumn<TimJson, String> brojKolona = UITvornica.<TimJson, String>kolona(
             cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getBrojClanova())),
             Stilovi.KOLONA_BROJ_CLANOVA
-    );
-    private final TableColumn<TimJson, String> clanoviKolona = kolona(
+    ).build();
+
+    private final TableColumn<TimJson, String> clanoviKolona = UITvornica.<TimJson, String>kolona(
             cellData -> new SimpleStringProperty(cellData.getValue().getClanoviFormatted()),
             Stilovi.KOLONA_CLANOVI_TIMA
-    );
+    ).build();
 
     private final ObservableList<TimJson> podaciTimova = FXCollections.observableArrayList();
 
@@ -62,8 +63,9 @@ public class PregledTimovaPogled extends OsnovniPogled {
     protected VBox kreirajSadrzaj() {
         HBox kontroleBox = kreirajKontrole();
 
-        VBox sadrzaj = vbox(naslov, tablicaTimova, poruke.kontejner, kontroleBox)
+        VBox sadrzaj = vbox(naslov, tablicaTimova, poruke.getKontejner(), kontroleBox)
                 .stil(Stilovi.RAZMAK_SREDNJI, Stilovi.PADDING_SREDNJI)
+                .grow(Priority.ALWAYS)
                 .build();
 
         VBox.setVgrow(tablicaTimova, Priority.ALWAYS);
@@ -145,6 +147,11 @@ public class PregledTimovaPogled extends OsnovniPogled {
             System.err.println("Greška pri brisanju tima: " + e.getMessage());
             poruke.prikaziGreskuSTimerom("greska_tim_neobrisan");
         }
+    }
+
+    @Override
+    public void priSakrivanju() {
+        poruke.cleanup();
     }
 
     @Override

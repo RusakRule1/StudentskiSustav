@@ -17,8 +17,8 @@ public class PorukaHelper {
 
     private static final int TRAJANJE_PORUKE_MS = 3000;
 
-    public final Label labela;
-    public final HBox kontejner;
+    private final Label labela;
+    private final HBox kontejner;
     private final Prijevod prijevod;
 
     private Timer timerPoruke;
@@ -46,13 +46,15 @@ public class PorukaHelper {
     }
 
     private static HBox kreirajKontejner(Label labela) {
-        return hbox(labela)
+        HBox kontejner = hbox(labela)
                 .pozicija(Pos.CENTER)
                 .maxSirina(Double.MAX_VALUE)
                 .fillVisinu(true)
                 .childGrow(labela, Priority.ALWAYS)
                 .vidljivo(false)
                 .build();
+        kontejner.managedProperty().bind(kontejner.visibleProperty());
+        return kontejner;
     }
 
     public void prikaziGresku(String kljucGreske) {
@@ -117,5 +119,9 @@ public class PorukaHelper {
                 Platform.runLater(PorukaHelper.this::sakrijPoruku);
             }
         }, TRAJANJE_PORUKE_MS);
+    }
+
+    public HBox getKontejner() {
+        return kontejner;
     }
 }

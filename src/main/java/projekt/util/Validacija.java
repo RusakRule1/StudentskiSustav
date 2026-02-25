@@ -56,4 +56,24 @@ public class Validacija {
             return "greska_validacija_jmbag";
         }
     }
+
+    public static String validirajIme(String ime) {
+        if (ime == null || ime.isBlank()) {
+            return "greska_ime_obavezno";
+        }
+        if (!ime.matches("[A-ZČĆŽŠĐ][a-zčćžšđ]+")) {
+            return "greska_ime_format";
+        }
+        return null;
+    }
+
+    public static String validirajPrezime(String prezime) {
+        if (prezime == null || prezime.isBlank()) {
+            return "greska_prezime_obavezno";
+        }
+        if (!prezime.matches("[A-ZČĆŽŠĐ][a-zčćžšđ]+")) {
+            return "greska_prezime_format";
+        }
+        return null;
+    }
 }

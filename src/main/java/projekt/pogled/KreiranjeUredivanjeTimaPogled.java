@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import projekt.model.Student;
 import projekt.model.StudentJson;
@@ -19,6 +20,7 @@ import projekt.util.PorukaHelper;
 import projekt.util.Stilovi;
 import projekt.util.UITvornica;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,9 +54,9 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
 
     private final TableView<StudentJson> tablicaPostavljeniStudenti = UITvornica.<StudentJson>tableView()
             .kolone(
-                    kolona("ime", Stilovi.KOLONA_IME_STUDENTA),
-                    kolona("prezime", Stilovi.KOLONA_PREZIME_STUDENTA),
-                    kolona("jmbag", Stilovi.KOLONA_JMBAG_STUDENTA)
+                    UITvornica.<StudentJson, String>kolona("ime", Stilovi.KOLONA_IME_STUDENTA).build(),
+                    UITvornica.<StudentJson, String>kolona("prezime", Stilovi.KOLONA_PREZIME_STUDENTA).build(),
+                    UITvornica.<StudentJson, String>kolona("jmbag", Stilovi.KOLONA_JMBAG_STUDENTA).build()
             )
             .stavke(postavljeniStudenti)
             .constrained()
@@ -63,9 +65,9 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
 
     private final TableView<StudentJson> tablicaDostupniStudenti = UITvornica.<StudentJson>tableView()
             .kolone(
-                    kolona("ime", Stilovi.KOLONA_IME_STUDENTA),
-                    kolona("prezime", Stilovi.KOLONA_PREZIME_STUDENTA),
-                    kolona("jmbag", Stilovi.KOLONA_JMBAG_STUDENTA)
+                    UITvornica.<StudentJson, String>kolona("ime", Stilovi.KOLONA_IME_STUDENTA).build(),
+                    UITvornica.<StudentJson, String>kolona("prezime", Stilovi.KOLONA_PREZIME_STUDENTA).build(),
+                    UITvornica.<StudentJson, String>kolona("jmbag", Stilovi.KOLONA_JMBAG_STUDENTA).build()
             )
             .stavke(dostupniStudenti)
             .constrained()
@@ -90,9 +92,12 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
                 .stil(Stilovi.RAZMAK_KONTROLE)
                 .build();
 
-        VBox sadrzaj = vbox(naslov, nazivPolje, tabliceBox, poruke.kontejner, kontroleBox)
+        VBox sadrzaj = vbox(naslov, nazivPolje, tabliceBox, poruke.getKontejner(), kontroleBox)
                 .stil(Stilovi.GLAVNI_VBOX)
+                .grow(Priority.ALWAYS)
                 .build();
+
+        VBox.setVgrow(tabliceBox, Priority.ALWAYS);
 
         ucitajStudente();
         postaviListenere();
@@ -124,15 +129,23 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
     }
 
     private VBox kreirajPostavljeniSekciju() {
-        return vbox(labelPostavljeni, tablicaPostavljeniStudenti)
+        VBox sekcija = vbox(labelPostavljeni, tablicaPostavljeniStudenti)
                 .stil(Stilovi.RAZMAK_TABLICA_KONTEJNER)
+                .grow(Priority.ALWAYS)
                 .build();
+
+        VBox.setVgrow(tablicaPostavljeniStudenti, Priority.ALWAYS);
+        return sekcija;
     }
 
     private VBox kreirajDostupniSekciju() {
-        return vbox(labelDostupni, tablicaDostupniStudenti)
+        VBox sekcija = vbox(labelDostupni, tablicaDostupniStudenti)
                 .stil(Stilovi.RAZMAK_TABLICA_KONTEJNER)
+                .grow(Priority.ALWAYS)
                 .build();
+
+        VBox.setVgrow(tablicaDostupniStudenti, Priority.ALWAYS);
+        return sekcija;
     }
 
     private HBox kreirajGumbeZaManipulaciju() {
@@ -216,6 +229,7 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
     private List<String> dohvatiZauzeteJmbagove(List<TimJson> sviTimovi, String idTrenutnog) {
         return sviTimovi.stream()
                 .filter(tim -> !tim.getId().equals(idTrenutnog))
+                .filter(tim -> tim.getClanovi() != null)
                 .flatMap(tim -> tim.getClanovi().stream())
                 .map(StudentJson::getJmbag)
                 .toList();
@@ -224,7 +238,7 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
     private List<StudentJson> konvertirajUStudentJson(List<Student> studentiHibernate) {
         return studentiHibernate.stream()
                 .map(s -> new StudentJson(s.getJmbag(), s.getIme(), s.getPrezime()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void dodajOdabranogStudenta() {
@@ -307,10 +321,11 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
         try {
             TimJson noviTim = new TimJson();
             noviTim.setNaziv(nazivPolje.getText().trim());
-            noviTim.setClanovi(FXCollections.observableArrayList(postavljeniStudenti));
+            noviTim.setClanovi(new ArrayList<>(postavljeniStudenti));
 
             if (timServis.spremiTim(noviTim)) {
-                vratiSeNaPregled();
+                ocistiFormuZaNoviTim();
+                poruke.prikaziUspjehSTimerom("tim_kreiran");
             } else {
                 poruke.prikaziGreskuSTimerom("greska_tim_nije_kreiran");
             }
@@ -323,7 +338,7 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
     private void azurirajPostojeciTim() {
         try {
             timZaUredivanje.setNaziv(nazivPolje.getText().trim());
-            timZaUredivanje.setClanovi(FXCollections.observableArrayList(postavljeniStudenti));
+            timZaUredivanje.setClanovi(new ArrayList<>(postavljeniStudenti));
 
             if (timServis.azurirajTim(timZaUredivanje)) {
                 vratiSeNaPregled();
@@ -336,12 +351,22 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
         }
     }
 
+    private void ocistiFormuZaNoviTim() {
+        nazivPolje.clear();
+        ucitajStudente();
+    }
+
     private void vratiSeNaPregled() {
         UpraviteljPogleda.idiNatrag();
     }
 
     private boolean jeUredjivanje() {
         return timZaUredivanje != null;
+    }
+
+    @Override
+    public void priSakrivanju() {
+        poruke.cleanup();
     }
 
     @Override

@@ -97,6 +97,7 @@ public class Konfiguracija {
 
     private boolean spremiUINI() {
         try {
+            Files.createDirectories(DIREKTORIJ_KONFIGURACIJE);
             Ini ini = new Ini();
             ini.put(INI_SEKCIJA, "jezik", jezik);
             ini.put(INI_SEKCIJA, "sirina", String.valueOf(sirinaProzora));

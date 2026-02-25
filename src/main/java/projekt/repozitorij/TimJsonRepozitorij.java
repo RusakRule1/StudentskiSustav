@@ -47,6 +47,7 @@ public class TimJsonRepozitorij {
 
     public void spremi(List<TimJson> timovi) {
         try {
+            Files.createDirectories(TIMOVI_DIR);
             Files.writeString(TIMOVI_PATH, gson.toJson(timovi));
         } catch (IOException e) {
             throw new RuntimeException("Greška pri spremanju timova", e);

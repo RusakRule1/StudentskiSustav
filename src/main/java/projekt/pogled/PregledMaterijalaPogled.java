@@ -36,10 +36,10 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
     private final Label naslov = labela().stil(Stilovi.PODNASLOV).build();
     private final Label materijaliLabel = labela().stil(Stilovi.PODNASLOV).build();
 
-    private final TableColumn<Predmet, String> nazivPredmetaKolona = kolona("naziv", Stilovi.KOLONA_NAZIV_PREDMETA);
-    private final TableColumn<Predmet, String> sifraPredmetaKolona = kolona("sifra", Stilovi.KOLONA_SIFRA_PREDMETA);
-    private final TableColumn<Predmet, Integer> ectsPredmetaKolona = kolona("ectsBodovi", Stilovi.KOLONA_ECTS_PREDMETA);
-    private final TableColumn<Predmet, String> semestarPredmetaKolona = kolona("semestar", Stilovi.KOLONA_SEMESTAR_PREDMETA);
+    private final TableColumn<Predmet, String> nazivPredmetaKolona = UITvornica.<Predmet, String>kolona("naziv", Stilovi.KOLONA_NAZIV_PREDMETA).build();
+    private final TableColumn<Predmet, String> sifraPredmetaKolona = UITvornica.<Predmet, String>kolona("sifra", Stilovi.KOLONA_SIFRA_PREDMETA).build();
+    private final TableColumn<Predmet, Integer> ectsPredmetaKolona = UITvornica.<Predmet, Integer>kolona("ectsBodovi", Stilovi.KOLONA_ECTS_PREDMETA).build();
+    private final TableColumn<Predmet, String> semestarPredmetaKolona = UITvornica.<Predmet, String>kolona("semestar", Stilovi.KOLONA_SEMESTAR_PREDMETA).build();
 
     private final TableView<Predmet> tablicaPredmeta = UITvornica.<Predmet>tableView()
             .kolone(nazivPredmetaKolona, sifraPredmetaKolona, ectsPredmetaKolona, semestarPredmetaKolona)
@@ -48,14 +48,14 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
             .stil(Stilovi.TABLICA_VISINA_MALA)
             .build();
 
-    private final TableColumn<MaterijalXML, String> nazivMaterijalKolona = kolona("naziv");
-    private final TableColumn<MaterijalXML, String> tipMaterijalKolona = kolona(
+    private final TableColumn<MaterijalXML, String> nazivMaterijalKolona = UITvornica.<MaterijalXML, String>kolona("naziv").build();
+    private final TableColumn<MaterijalXML, String> tipMaterijalKolona = UITvornica.<MaterijalXML, String>kolona(
             cellData -> {
                 TipMaterijalaXML tip = cellData.getValue().getTip();
                 String prevedeniTip = tip != null ? prijevod.getPrijevod(tip.getKljucPrijevoda()) : "";
                 return new SimpleStringProperty(prevedeniTip);
             }
-    );
+    ).build();
 
     private final TableView<MaterijalXML> tablicaMaterijala = UITvornica.<MaterijalXML>tableView()
             .kolone(nazivMaterijalKolona, tipMaterijalKolona)
@@ -99,8 +99,9 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
         HBox akcijeBox = kreirajAkcijeBox();
 
         VBox sadrzaj = vbox(naslov, tablicaPredmeta, materijaliLabel, tablicaMaterijala,
-                unosBox, poruke.kontejner, akcijeBox)
+                unosBox, poruke.getKontejner(), akcijeBox)
                 .stil(Stilovi.RAZMAK_SREDNJI, Stilovi.PADDING_SREDNJI)
+                .grow(Priority.ALWAYS)
                 .build();
 
         VBox.setVgrow(tablicaPredmeta, Priority.ALWAYS);
@@ -358,6 +359,11 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
     }
 
     @Override
+    public void priSakrivanju() {
+        poruke.cleanup();
+    }
+
+    @Override
     protected void osvjeziPogledTekstove() {
         osvjeziNaslove();
         osvjeziKolonePredmeta();
@@ -395,7 +401,7 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
     }
 
     private void osvjeziGumbe() {
-        String kljuc = jeUredjivanje() ? "azuriraj_materijal_gumb" : "spremi_izmjene_gumb";
+        String kljuc = jeUredjivanje() ? "azuriraj_materijal_gumb" : "dodaj_materijal_gumb";
         spremiGumb.setText(prijevod.getPrijevod(kljuc));
         urediGumb.setText(prijevod.getPrijevod("uredi_materijal_gumb"));
         izbrisiGumb.setText(prijevod.getPrijevod("izbrisi_materijal_gumb"));

@@ -79,7 +79,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
                 osnovnaPoljaBox,
                 ulogaBox,
                 dodatniPodaciBox,
-                poruke.kontejner,
+                poruke.getKontejner(),
                 gumbBox
         ).stil(Stilovi.GLAVNI_VBOX).build();
     }
@@ -188,14 +188,14 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         }
 
         String ime = imePolje.getText().trim();
-        String imeGreska = validirajIme(ime);
+        String imeGreska = Validacija.validirajIme(ime);
         if (imeGreska != null) {
             poruke.prikaziGreskuSTimerom(imeGreska);
             return false;
         }
 
         String prezime = prezimePolje.getText().trim();
-        String prezimeGreska = validirajPrezime(prezime);
+        String prezimeGreska = Validacija.validirajPrezime(prezime);
         if (prezimeGreska != null) {
             poruke.prikaziGreskuSTimerom(prezimeGreska);
             return false;
@@ -250,26 +250,6 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
             return false;
         }
         return true;
-    }
-
-    private String validirajIme(String vrijednost) {
-        if (vrijednost == null || vrijednost.isBlank()) {
-            return "greska_ime_obavezno";
-        }
-        if (!vrijednost.matches("[A-ZČĆŽŠĐ][a-zčćžšđ]+")) {
-            return "greska_ime_format";
-        }
-        return null;
-    }
-
-    private String validirajPrezime(String vrijednost) {
-        if (vrijednost == null || vrijednost.isBlank()) {
-            return "greska_prezime_obavezno";
-        }
-        if (!vrijednost.matches("[A-ZČĆŽŠĐ][a-zčćžšđ]+")) {
-            return "greska_prezime_format";
-        }
-        return null;
     }
 
     private void spremiKorisnikaNaTemeljuUloge() {
@@ -384,6 +364,11 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         predmetiLista.getSelectionModel().clearSelection();
         ulogaGrupa.selectToggle(null);
         dodatniPodaciBox.getChildren().clear();
+    }
+
+    @Override
+    public void priSakrivanju() {
+        poruke.cleanup();
     }
 
     @Override
