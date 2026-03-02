@@ -54,9 +54,9 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
 
     private final TableView<StudentJson> tablicaPostavljeniStudenti = UITvornica.<StudentJson>tableView()
             .kolone(
-                    UITvornica.<StudentJson, String>kolona("ime", Stilovi.KOLONA_IME_STUDENTA).build(),
-                    UITvornica.<StudentJson, String>kolona("prezime", Stilovi.KOLONA_PREZIME_STUDENTA).build(),
-                    UITvornica.<StudentJson, String>kolona("jmbag", Stilovi.KOLONA_JMBAG_STUDENTA).build()
+                    UITvornica.<StudentJson, String>kolona("ime").build(),
+                    UITvornica.<StudentJson, String>kolona("prezime").build(),
+                    UITvornica.<StudentJson, String>kolona("jmbag").build()
             )
             .stavke(postavljeniStudenti)
             .constrained()
@@ -65,9 +65,9 @@ public class KreiranjeUredivanjeTimaPogled extends OsnovniPogled {
 
     private final TableView<StudentJson> tablicaDostupniStudenti = UITvornica.<StudentJson>tableView()
             .kolone(
-                    UITvornica.<StudentJson, String>kolona("ime", Stilovi.KOLONA_IME_STUDENTA).build(),
-                    UITvornica.<StudentJson, String>kolona("prezime", Stilovi.KOLONA_PREZIME_STUDENTA).build(),
-                    UITvornica.<StudentJson, String>kolona("jmbag", Stilovi.KOLONA_JMBAG_STUDENTA).build()
+                    UITvornica.<StudentJson, String>kolona("ime").build(),
+                    UITvornica.<StudentJson, String>kolona("prezime").build(),
+                    UITvornica.<StudentJson, String>kolona("jmbag").build()
             )
             .stavke(dostupniStudenti)
             .constrained()

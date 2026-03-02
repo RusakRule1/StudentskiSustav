@@ -81,21 +81,5 @@ public class Stilovi {
     public static final String TABLICA_VISINA_MALA = "tablica-visina-mala";
     public static final String LISTA_VISINA = "lista-visina";
 
-    public static final String KOLONA_NAZIV_PREDMETA = "kolona-naziv-predmeta";
-    public static final String KOLONA_SIFRA_PREDMETA = "kolona-sifra-predmeta";
-    public static final String KOLONA_ECTS_PREDMETA = "kolona-ects-predmeta";
-    public static final String KOLONA_SEMESTAR_PREDMETA = "kolona-semestar-predmeta";
-
-    public static final String KOLONA_NAZIV_MATERIJALA = "kolona-naziv-materijala";
-    public static final String KOLONA_TIP_MATERIJALA = "kolona-tip-materijala";
-
-    public static final String KOLONA_IME_STUDENTA = "kolona-ime-studenta";
-    public static final String KOLONA_PREZIME_STUDENTA = "kolona-prezime-studenta";
-    public static final String KOLONA_JMBAG_STUDENTA = "kolona-jmbag-studenta";
-
-    public static final String KOLONA_NAZIV_TIMA = "kolona-naziv-tima";
-    public static final String KOLONA_BROJ_CLANOVA = "kolona-broj-clanova";
-    public static final String KOLONA_CLANOVI_TIMA = "kolona-clanovi-tima";
-
     public static final String SEKCIJA = "sekcija";
 }

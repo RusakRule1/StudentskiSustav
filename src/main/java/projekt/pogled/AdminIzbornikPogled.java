@@ -25,7 +25,8 @@ public class AdminIzbornikPogled extends OsnovniPogled {
     protected VBox kreirajSadrzaj() {
         sekcije = List.of(
                 kreirajSekciju("dodaj_korisnika", this::otvoriDodavanjeKorisnika),
-                kreirajSekciju("pregledaj_logove", this::otvoriPregledLogova)
+                kreirajSekciju("pregledaj_logove", this::otvoriPregledLogova),
+                kreirajSekciju("pregledaj_predmete", this::otvoriPregledPredmeta)
         );
 
         return vbox(sekcije.stream().map(SekcijaInfo::sekcija).toArray(Node[]::new)).stil(Stilovi.GLAVNI_VBOX).build();
@@ -51,6 +52,10 @@ public class AdminIzbornikPogled extends OsnovniPogled {
 
     private void otvoriPregledLogova() {
         UpraviteljPogleda.prikazi(new PregledZapisaPogled());
+    }
+
+    private void otvoriPregledPredmeta() {
+        UpraviteljPogleda.prikazi(new PregledPredmetaPogled());
     }
 
     @Override

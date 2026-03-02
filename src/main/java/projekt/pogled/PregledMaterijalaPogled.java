@@ -36,10 +36,10 @@ public class PregledMaterijalaPogled extends OsnovniPogled {
     private final Label naslov = labela().stil(Stilovi.PODNASLOV).build();
     private final Label materijaliLabel = labela().stil(Stilovi.PODNASLOV).build();
 
-    private final TableColumn<Predmet, String> nazivPredmetaKolona = UITvornica.<Predmet, String>kolona("naziv", Stilovi.KOLONA_NAZIV_PREDMETA).build();
-    private final TableColumn<Predmet, String> sifraPredmetaKolona = UITvornica.<Predmet, String>kolona("sifra", Stilovi.KOLONA_SIFRA_PREDMETA).build();
-    private final TableColumn<Predmet, Integer> ectsPredmetaKolona = UITvornica.<Predmet, Integer>kolona("ectsBodovi", Stilovi.KOLONA_ECTS_PREDMETA).build();
-    private final TableColumn<Predmet, String> semestarPredmetaKolona = UITvornica.<Predmet, String>kolona("semestar", Stilovi.KOLONA_SEMESTAR_PREDMETA).build();
+    private final TableColumn<Predmet, String> nazivPredmetaKolona = UITvornica.<Predmet, String>kolona("naziv").build();
+    private final TableColumn<Predmet, String> sifraPredmetaKolona = UITvornica.<Predmet, String>kolona("sifra").build();
+    private final TableColumn<Predmet, Integer> ectsPredmetaKolona = UITvornica.<Predmet, Integer>kolona("ectsBodovi").build();
+    private final TableColumn<Predmet, String> semestarPredmetaKolona = UITvornica.<Predmet, String>kolona("semestar").build();
 
     private final TableView<Predmet> tablicaPredmeta = UITvornica.<Predmet>tableView()
             .kolone(nazivPredmetaKolona, sifraPredmetaKolona, ectsPredmetaKolona, semestarPredmetaKolona)

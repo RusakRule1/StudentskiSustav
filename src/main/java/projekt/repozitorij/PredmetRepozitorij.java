@@ -13,7 +13,25 @@ public class PredmetRepozitorij {
     }
 
     public List<Predmet> vratiSve() {
-        return predmetDAO.vratiSve();
+        return predmetDAO.pronadjiListu(
+                "SELECT p FROM Predmet p LEFT JOIN FETCH p.profesor",
+                Predmet.class);
+    }
+
+    public void obrisi(Predmet predmet) {
+        predmetDAO.obrisi(predmet);
+    }
+
+    public void obrisiPoId(Integer id) {
+        predmetDAO.obrisiPoId(id);
+    }
+
+    public void spremi(Predmet predmet) {
+        predmetDAO.spremi(predmet);
+    }
+
+    public void azuriraj(Predmet predmet) {
+        predmetDAO.azuriraj(predmet);
     }
 
     public List<Predmet> pronadjiPredmeteBezProfesora() {

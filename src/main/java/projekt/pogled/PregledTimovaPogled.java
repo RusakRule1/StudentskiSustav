@@ -27,16 +27,12 @@ public class PregledTimovaPogled extends OsnovniPogled {
 
     private final Label naslov = labela().stil(Stilovi.PODNASLOV).build();
 
-    private final TableColumn<TimJson, String> nazivKolona = UITvornica.<TimJson, String>kolona("naziv", Stilovi.KOLONA_NAZIV_TIMA).build();
+    private final TableColumn<TimJson, String> nazivKolona = UITvornica.<TimJson, String>kolona("naziv").build();
     private final TableColumn<TimJson, String> brojKolona = UITvornica.<TimJson, String>kolona(
-            cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getBrojClanova())),
-            Stilovi.KOLONA_BROJ_CLANOVA
-    ).build();
+            cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getBrojClanova()))).build();
 
     private final TableColumn<TimJson, String> clanoviKolona = UITvornica.<TimJson, String>kolona(
-            cellData -> new SimpleStringProperty(cellData.getValue().getClanoviFormatted()),
-            Stilovi.KOLONA_CLANOVI_TIMA
-    ).build();
+            cellData -> new SimpleStringProperty(cellData.getValue().getClanoviFormatted())).build();
 
     private final ObservableList<TimJson> podaciTimova = FXCollections.observableArrayList();
 
