@@ -44,6 +44,8 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
 
     private final Label jmbagLabela = labela().build();
     private final TextField jmbagPolje = textField().build();
+    private final Label godinaStudijaLabela = labela().build();
+    private final TextField godinaStudijaPolje = textField().build();
 
     private final Label titulaLabela = labela().build();
     private final TextField titulaPolje = textField().build();
@@ -121,9 +123,8 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
     }
 
     private VBox kreirajStudentPolja() {
-        return vbox(jmbagLabela, jmbagPolje)
-                .stil(Stilovi.RAZMAK_MALI)
-                .build();
+        return vbox(jmbagLabela, jmbagPolje, godinaStudijaLabela, godinaStudijaPolje)
+                .stil(Stilovi.RAZMAK_MALI).build();
     }
 
     private VBox kreirajProfesorPolja() {
@@ -220,12 +221,23 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
     private boolean validirajStudentPodatke() {
         String jmbag = jmbagPolje.getText().trim();
         String jmbagGreska = Validacija.validirajJMBAG(jmbag);
-
         if (jmbagGreska != null) {
             poruke.prikaziGreskuSTimerom(jmbagGreska);
             return false;
         }
+        if (!jeValidnaGodinaStudija(godinaStudijaPolje.getText())) {
+            poruke.prikaziGreskuSTimerom("greska_godina_studija_nevalidna");
+            return false;
+        }
         return true;
+    }
+
+    private boolean jeValidnaGodinaStudija(String tekst) {
+        try {
+            return Integer.parseInt(tekst.trim()) >= 1;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     private boolean validirajProfesorPodatke() {
@@ -283,7 +295,8 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
             return false;
         }
         try {
-            studentServis.spremiStudenta(new Student(email, lozinka, ime, prezime, jmbag));
+            int godinaStudija = Integer.parseInt(godinaStudijaPolje.getText().trim());
+            studentServis.spremiStudenta(new Student(email, lozinka, ime, prezime, jmbag, godinaStudija));
             return true;
         } catch (Exception e) {
             System.err.println("Greška pri spremanju studenta: " + e.getMessage());
@@ -359,6 +372,7 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
         imePolje.clear();
         prezimePolje.clear();
         jmbagPolje.clear();
+        godinaStudijaPolje.clear();
         titulaPolje.clear();
         ovlastiPolje.clear();
         predmetiLista.getSelectionModel().clearSelection();
@@ -404,6 +418,8 @@ public class DodavanjeKorisnikaPogled extends OsnovniPogled {
     private void osvjeziSpecificnaPolja() {
         jmbagLabela.setText(prijevod.getPrijevod("jmbag_labela"));
         jmbagPolje.setPromptText(prijevod.getPrijevod("jmbag_prompt"));
+        godinaStudijaLabela.setText(prijevod.getPrijevod("godina_studija_labela"));
+        godinaStudijaPolje.setPromptText(prijevod.getPrijevod("godina_studija_prompt"));
         titulaLabela.setText(prijevod.getPrijevod("titula_labela"));
         titulaPolje.setPromptText(prijevod.getPrijevod("titula_prompt"));
         predmetiLabela.setText(prijevod.getPrijevod("predmeti_labela"));

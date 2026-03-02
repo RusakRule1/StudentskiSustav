@@ -34,6 +34,14 @@
     -fx-background-color: #c0392b;
 }
 
+.gumb-zuti {
+    -fx-background-color: #f39c12;
+}
+
+.gumb-zuti:hover {
+    -fx-background-color: #d68910;
+}
+
 .gumb-onemogucen {
     -fx-background-color: #95a5a6;
     -fx-cursor: default;

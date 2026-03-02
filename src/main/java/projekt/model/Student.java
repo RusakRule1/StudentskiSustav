@@ -14,6 +14,9 @@ public class Student extends Korisnik {
     @Column(name = "jmbag", unique = true, nullable = false, length = 10)
     private String jmbag;
 
+    @Column(name = "godina_studija", nullable = false)
+    private Integer godinaStudija;
+
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Upis> upisaniPredmeti = new ArrayList<>();
 
@@ -23,9 +26,10 @@ public class Student extends Korisnik {
     public Student() {
     }
 
-    public Student(String email, String lozinka, String ime, String prezime, String jmbag) {
+    public Student(String email, String lozinka, String ime, String prezime, String jmbag, Integer godinaStudija) {
         super(email, lozinka, ime, prezime, Uloga.STUDENT);
         this.jmbag = jmbag;
+        this.godinaStudija = godinaStudija;
     }
 
     public String getJmbag() {
@@ -34,6 +38,14 @@ public class Student extends Korisnik {
 
     public void setJmbag(String jmbag) {
         this.jmbag = jmbag;
+    }
+
+    public Integer getGodinaStudija() {
+        return godinaStudija;
+    }
+
+    public void setGodinaStudija(Integer godinaStudija) {
+        this.godinaStudija = godinaStudija;
     }
 
     public List<Upis> getUpisaniPredmeti() {
