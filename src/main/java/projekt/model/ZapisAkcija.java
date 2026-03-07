@@ -3,13 +3,14 @@ package projekt.model;
 public enum ZapisAkcija {
     PRIJAVA("Prijava u sustav"),
     ODJAVA("Odjava iz sustava"),
-    PREDAN_ZADATAK("Predan zadatak"),
-    OBJAVLJEN_ZADATAK("Objavljen zadatak"),
-    OCJENJEN_ZADATAK("Ocjenjen zadatak"),
     KREIRAN_KORISNIK("Kreiran novi korisnik"),
-    IZMJENJEN_KORISNIK("Izmjenjen korisnik"),
-    BRISANJE_KORISNIKA("Brisanje korisnika");
-    
+    OBJAVLJEN_ZADATAK("Objavljen zadatak"),
+    IZMIJENJEN_ZADATAK("Izmijenjen zadatak"),
+    OBRISAN_ZADATAK("Obrisan zadatak"),
+    PREDANO_RJESENJE("Predano rješenje"),
+    OCJENJENO_RJESENJE("Ocijenjeno rješenje"),
+    OBRISANA_OCJENA("Obrisana ocjena");
+
     private final String opis;
 
     ZapisAkcija(String opis) {

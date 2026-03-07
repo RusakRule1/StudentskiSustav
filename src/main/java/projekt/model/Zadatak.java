@@ -106,4 +106,12 @@ public class Zadatak {
         predaje.add(predaja);
         predaja.setZadatak(this);
     }
+
+    public boolean jeLiKasnio() {
+        return LocalDateTime.now().isAfter(rokPredaje);
+    }
+
+    public int vratiBrojPredanih() {
+        return predaje.size();
+    }
 }

@@ -45,4 +45,19 @@ public class PredmetRepozitorij {
                 "SELECT p FROM Predmet p WHERE p.profesor.id = :profesorId",
                 Predmet.class, "profesorId", profesorId);
     }
+
+    public List<Predmet> vratiPredmeteStudenta(Integer studentId) {
+        return predmetDAO.pronadjiListu(
+                "SELECT DISTINCT p FROM Predmet p " +
+                        "JOIN FETCH p.profesor " +
+                        "JOIN p.upisi u " +
+                        "WHERE u.student.id = :studentId",
+                Predmet.class, "studentId", studentId);
+    }
+
+    public Predmet vratiPredmetSUpisimaPoId(Integer predmetId) {
+        return predmetDAO.pronadjiJedan(
+                "SELECT p FROM Predmet p LEFT JOIN FETCH p.upisi WHERE p.id = :predmetId",
+                Predmet.class, "predmetId", predmetId);
+    }
 }

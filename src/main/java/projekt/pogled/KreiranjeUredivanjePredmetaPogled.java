@@ -50,6 +50,7 @@ public class KreiranjeUredivanjePredmetaPogled extends OsnovniPogled {
     private final Label profesorLabela = labela().build();
     private final ObservableList<Profesor> profesori = FXCollections.observableArrayList();
     private final ComboBox<Profesor> profesorCombo = UITvornica.<Profesor>comboBox()
+            .stavke(profesori)
             .stil(Stilovi.POLJE_SIRINA_COMBO)
             .build();
 
@@ -114,7 +115,6 @@ public class KreiranjeUredivanjePredmetaPogled extends OsnovniPogled {
     }
 
     private void konfigurirajProfesorCombo() {
-        profesorCombo.setItems(profesori);
         profesorCombo.setConverter(new StringConverter<>() {
             @Override
             public String toString(Profesor profesor) {

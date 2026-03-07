@@ -3,8 +3,11 @@ package projekt.pogled;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import projekt.model.Admin;
+import projekt.upravitelj.Sesija;
 import projekt.upravitelj.UpraviteljPogleda;
 import projekt.util.Stilovi;
 
@@ -15,6 +18,8 @@ import static projekt.util.UITvornica.*;
 public class AdminIzbornikPogled extends OsnovniPogled {
 
     private List<SekcijaInfo> sekcije;
+
+    private Label ovlastiLabela;
 
     public AdminIzbornikPogled() {
         super();
@@ -29,7 +34,17 @@ public class AdminIzbornikPogled extends OsnovniPogled {
                 kreirajSekciju("pregledaj_predmete", this::otvoriPregledPredmeta)
         );
 
-        return vbox(sekcije.stream().map(SekcijaInfo::sekcija).toArray(Node[]::new)).stil(Stilovi.GLAVNI_VBOX).build();
+        Admin admin = (Admin) Sesija.getInstanca().getPrijavljeniKorisnik();
+        ovlastiLabela = labela(admin.vratiMoguceUpravljanjeStudentima())
+                .build();
+
+        Node[] sadrzaj = new Node[sekcije.size() + 1];
+        sadrzaj[0] = ovlastiLabela;
+        for (int i = 0; i < sekcije.size(); i++) {
+            sadrzaj[i + 1] = sekcije.get(i).sekcija();
+        }
+
+        return vbox(sadrzaj).stil(Stilovi.GLAVNI_VBOX).build();
     }
 
     private SekcijaInfo kreirajSekciju(String kljuc, Runnable akcija) {

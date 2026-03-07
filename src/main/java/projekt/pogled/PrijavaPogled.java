@@ -147,10 +147,10 @@ public class PrijavaPogled extends OsnovniPogled {
 
     private void obradiUspjesnuPrijavu(Korisnik korisnik, String email) {
         Sesija.getInstanca().postaviPrijavljenogKorisnika(korisnik);
+        zabiljeziPrijavu(korisnik.getEmail(), korisnik.vratiUlogu());
         obradiZapamtiMe(email);
         ocistiResurse();
-        zabiljeziPrijavu(korisnik.getEmail(), korisnik.getUloga());
-        preusmjeriPoUlozi(korisnik.getUloga());
+        preusmjeriPoUlozi(korisnik.vratiUlogu());
     }
 
     private void obradiNeuspjesnuPrijavu() {

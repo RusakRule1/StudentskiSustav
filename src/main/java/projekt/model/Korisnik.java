@@ -87,12 +87,16 @@ public class Korisnik {
         this.sifriranoPrezime = (prezime == null || prezime.trim().isEmpty()) ? "" : RSA.sifriraj(prezime);
     }
 
-    public Uloga getUloga() {
+    public Uloga vratiUlogu() {
         return uloga;
     }
 
     public void setUloga(Uloga uloga) {
         this.uloga = uloga;
+    }
+
+    public String vratiPunoIme() {
+        return getIme() + " " + getPrezime();
     }
 
     @Override

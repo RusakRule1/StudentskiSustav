@@ -185,6 +185,11 @@ public class PregledUpisaPredmetaPogled extends OsnovniPogled {
             dostupniStudenti.setAll(upisServis.pronadjiStudenteMoguceZaUpis(
                     predmet.getId(), predmet.getGodinaIzvodenja()));
 
+            Predmet predmetSUpisi = predmetServis.vratiPredmetSUpisimaPoId(predmet.getId());
+            naslovUpisani.setText(prijevod.getPrijevod("upis_upisani_studenti") +
+                    " - " + predmetSUpisi.vratiSifraNaziv() +
+                    " (" + predmetSUpisi.vratiBrojStudenata() + ")");
+            
             azurirajPlaceholdereTablica();
             izvjestajGumb.setDisable(upisaniStudenti.isEmpty());
         } catch (Exception e) {
@@ -204,7 +209,7 @@ public class PregledUpisaPredmetaPogled extends OsnovniPogled {
             poruke.prikaziUspjehSTimerom("upis_uspjeh");
         } catch (Exception e) {
             System.err.println("Greška pri upisu studenta: " + e.getMessage());
-            poruke.prikaziGreskuSTimerom("upis_greska");
+            poruke.prikaziGreskuSTimerom("greska_upis");
         }
     }
 
@@ -219,7 +224,7 @@ public class PregledUpisaPredmetaPogled extends OsnovniPogled {
             poruke.prikaziUspjehSTimerom("ispis_uspjeh");
         } catch (Exception e) {
             System.err.println("Greška pri ispisu studenta: " + e.getMessage());
-            poruke.prikaziGreskuSTimerom("ispis_greska");
+            poruke.prikaziGreskuSTimerom("greska_ispis");
         }
     }
 
@@ -259,17 +264,17 @@ public class PregledUpisaPredmetaPogled extends OsnovniPogled {
             int exitCode = zadatak.getValue();
             switch (exitCode) {
                 case IzvjestajPodaci.USPJEH -> poruke.prikaziUspjehSTimerom("izvjestaj_uspjeh");
-                case IzvjestajPodaci.GRESKA_ARGUMENTI -> poruke.prikaziGreskuSTimerom("izvjestaj_greska_argumenti");
-                case IzvjestajPodaci.GRESKA_CITANJE -> poruke.prikaziGreskuSTimerom("izvjestaj_greska_citanje");
-                case IzvjestajPodaci.GRESKA_PARSIRANJE -> poruke.prikaziGreskuSTimerom("izvjestaj_greska_parsiranje");
-                case IzvjestajPodaci.GRESKA_GENERIRANJE -> poruke.prikaziGreskuSTimerom("izvjestaj_greska_generiranje");
-                default -> poruke.prikaziGreskuSTimerom("izvjestaj_greska_opcenita");
+                case IzvjestajPodaci.GRESKA_ARGUMENTI -> poruke.prikaziGreskuSTimerom("greska_izvjestaj_argumenti");
+                case IzvjestajPodaci.GRESKA_CITANJE -> poruke.prikaziGreskuSTimerom("greska_izvjestaj_citanje");
+                case IzvjestajPodaci.GRESKA_PARSIRANJE -> poruke.prikaziGreskuSTimerom("greska_izvjestaj_parsiranje");
+                case IzvjestajPodaci.GRESKA_GENERIRANJE -> poruke.prikaziGreskuSTimerom("greska_izvjestaj_generiranje");
+                default -> poruke.prikaziGreskuSTimerom("greska_izvjestaj_opcenita");
             }
         });
 
         zadatak.setOnFailed(e -> {
             izvjestajGumb.setDisable(upisaniStudenti.isEmpty());
-            poruke.prikaziGreskuSTimerom("izvjestaj_greska_opcenita");
+            poruke.prikaziGreskuSTimerom("greska_izvjestaj_opcenita");
         });
         return zadatak;
     }

@@ -73,4 +73,17 @@ public class Student extends Korisnik {
         predaniZadaci.add(predajaZadatka);
         predajaZadatka.setStudent(this);
     }
+
+    public double vratiProsjekOcjena() {
+        return predaniZadaci.stream()
+                .filter(p -> p.getOcjena() != null)
+                .collect(java.util.stream.Collectors.groupingBy(
+                        p -> p.getZadatak().getPredmet().getId(),
+                        java.util.stream.Collectors.averagingInt(p -> p.getOcjena().getVrijednost())
+                ))
+                .values().stream()
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0.0);
+    }
 }

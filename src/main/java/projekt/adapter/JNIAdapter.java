@@ -12,4 +12,8 @@ public class JNIAdapter {
     public native boolean validirajJMBAG(String jmbag);
 
     public native String ucitajSvePrijevode();
+
+    public native String otvoriDijalogOdabira();
+
+    public native String otvoriDijalogSpremanja(String predlozenoIme);
 }

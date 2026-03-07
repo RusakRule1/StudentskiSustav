@@ -98,4 +98,12 @@ public class Ocjena {
     public void setDatumOcjenjivanja(LocalDateTime datumOcjenjivanja) {
         this.datumOcjenjivanja = datumOcjenjivanja;
     }
+
+    public boolean jeLiProlazna() {
+        return vrijednost >= 2;
+    }
+
+    public String vratiOcjenuSlovima() {
+        return "ocjena_" + vrijednost;
+    }
 }

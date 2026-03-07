@@ -19,6 +19,7 @@ import projekt.model.ZapisAkcija;
 import projekt.upravitelj.*;
 import projekt.util.Stilovi;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -160,13 +161,10 @@ public abstract class OsnovniPogled {
 
     private void obradiOdjavu() {
         Sesija sesija = Sesija.getInstanca();
-        Korisnik prijavljeni = sesija.getPrijavljeniKorisnik();
-        if (prijavljeni != null) {
-            this.upraviteljZapisima.dodajZapis(new Zapis(
-                    prijavljeni.getEmail(),
-                    ZapisAkcija.ODJAVA,
-                    "Uspješna odjava korisnika s ulogom: " + prijavljeni.getUloga()
-            ));
+        Korisnik korisnik = sesija.getPrijavljeniKorisnik();
+        if (korisnik != null) {
+            UpraviteljZapisima.getInstanca().dodajZapis(
+                    new Zapis(korisnik.getEmail(), ZapisAkcija.ODJAVA, "", LocalDateTime.now()));
         }
         sesija.odjaviKorisnika();
         UpraviteljPogleda.prikaziBezPovijesti(new PrijavaPogled());

@@ -64,6 +64,10 @@ public class Profesor extends Korisnik {
 
     public String getPunoImeSTitulom() {
         String titulaPrefiks = (titula != null && !titula.isBlank()) ? titula + " " : "";
-        return titulaPrefiks + getIme() + " " + getPrezime();
+        return titulaPrefiks + vratiPunoIme();
+    }
+
+    public int vratiBrojPredmeta() {
+        return predmeti.size();
     }
 }

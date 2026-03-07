@@ -135,8 +135,16 @@ public class Predmet {
         zadatak.setPredmet(this);
     }
 
+    public String vratiSifraNaziv() {
+        return sifra + " - " + naziv;
+    }
+
+    public int vratiBrojStudenata() {
+        return upisi.size();
+    }
+
     @Override
     public String toString() {
-        return naziv;
+        return vratiSifraNaziv();
     }
 }

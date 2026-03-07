@@ -24,7 +24,8 @@ public class StudentIzbornikPogled extends OsnovniPogled {
     @Override
     protected VBox kreirajSadrzaj() {
         sekcije = List.of(
-                kreirajSekciju("dodaj_korisnika", this::otvoriDodavanjeKorisnika)
+                kreirajSekciju("predmeti_student", this::otvoriPregledPredmeta),
+                kreirajSekciju("zadaci_student", this::otvoriPregledZadataka)
         );
 
         return vbox(sekcije.stream().map(SekcijaInfo::sekcija).toArray(Node[]::new)).stil(Stilovi.GLAVNI_VBOX).build();
@@ -44,8 +45,12 @@ public class StudentIzbornikPogled extends OsnovniPogled {
         return new SekcijaInfo(sekcija, podnaslov, gumbKomponenta, kljuc);
     }
 
-    private void otvoriDodavanjeKorisnika() {
-        UpraviteljPogleda.prikazi(new DodavanjeKorisnikaPogled());
+    private void otvoriPregledPredmeta() {
+        UpraviteljPogleda.prikazi(new PregledPredmetaStudentPogled());
+    }
+
+    private void otvoriPregledZadataka() {
+        UpraviteljPogleda.prikazi(new PregledZadatakaStudentPogled());
     }
 
     @Override

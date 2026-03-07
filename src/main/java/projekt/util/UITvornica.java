@@ -80,4 +80,8 @@ public class UITvornica {
         HBox.setHgrow(spacer, Priority.ALWAYS);
         return spacer;
     }
+
+    public static TextAreaGraditelj textArea() {
+        return new TextAreaGraditelj();
+    }
 }

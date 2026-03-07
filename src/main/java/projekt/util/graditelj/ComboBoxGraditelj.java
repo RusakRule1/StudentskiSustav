@@ -19,6 +19,11 @@ public class ComboBoxGraditelj<T> {
         return this;
     }
 
+    public ComboBoxGraditelj<T> stavke(javafx.collections.ObservableList<T> stavke) {
+        comboBox.setItems(stavke);
+        return this;
+    }
+
     @SafeVarargs
     public final ComboBoxGraditelj<T> stavke(T... stavke) {
         comboBox.getItems().setAll(stavke);

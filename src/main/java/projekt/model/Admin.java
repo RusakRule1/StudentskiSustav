@@ -19,7 +19,7 @@ public class Admin extends Korisnik {
         this.ovlasti = ovlasti;
     }
 
-    public String getOvlasti() {
+    public String vratiMoguceUpravljanjeStudentima() {
         return ovlasti;
     }
 

@@ -26,7 +26,8 @@ public class ProfesorIzbornikPogled extends OsnovniPogled {
         sekcije = List.of(
                 kreirajSekciju("timovi", this::otvoriPregledTimova),
                 kreirajSekciju("materijali", this::otvoriPregledMaterijala),
-                kreirajSekciju("upis_predmeta", this::otvoriPregledUpisaPredmeta)
+                kreirajSekciju("upis_predmeta", this::otvoriPregledUpisaPredmeta),
+                kreirajSekciju("zadaci", this::otvoriPregledZadataka)
         );
 
         return vbox(sekcije.stream().map(SekcijaInfo::sekcija).toArray(Node[]::new)).stil(Stilovi.GLAVNI_VBOX).build();
@@ -56,6 +57,10 @@ public class ProfesorIzbornikPogled extends OsnovniPogled {
 
     private void otvoriPregledUpisaPredmeta() {
         UpraviteljPogleda.prikazi(new PregledUpisaPredmetaPogled());
+    }
+
+    private void otvoriPregledZadataka() {
+        UpraviteljPogleda.prikazi(new PregledZadatakaPogled());
     }
 
     @Override

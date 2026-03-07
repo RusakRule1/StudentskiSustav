@@ -5,8 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "predaja_zadatka",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"zadatak_id", "student_id"}))
+@Table(name = "predaja_zadatka", uniqueConstraints = @UniqueConstraint(columnNames = {"zadatak_id", "student_id"}))
 public class PredajaZadatka {
 
     @Id
@@ -52,6 +51,7 @@ public class PredajaZadatka {
 
     public PredajaZadatka(Zadatak zadatak, Student student, String nazivDatoteke,
                           String tipDatoteke, Long velicinaDatoteke, byte[] predanaDatoteka) {
+        this();
         this.zadatak = zadatak;
         this.student = student;
         this.nazivDatoteke = nazivDatoteke;
@@ -84,7 +84,7 @@ public class PredajaZadatka {
         this.student = student;
     }
 
-    public String getNazivDatoteke() {
+    public String vratiNazivDatoteke() {
         return nazivDatoteke;
     }
 
@@ -142,5 +142,9 @@ public class PredajaZadatka {
             this.status = StatusPredaje.OCJENJENO;
             ocjena.setPredaja(this);
         }
+    }
+
+    public boolean jeLiOcjenjeno() {
+        return status == StatusPredaje.OCJENJENO;
     }
 }

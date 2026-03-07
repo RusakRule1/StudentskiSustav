@@ -35,4 +35,12 @@ public class PredmetServis {
     public void azurirajPredmet(Predmet predmet) {
         predmetRepozitorij.azuriraj(predmet);
     }
+
+    public List<Predmet> vratiPredmeteStudenta(Integer studentId) {
+        return predmetRepozitorij.vratiPredmeteStudenta(studentId);
+    }
+
+    public Predmet vratiPredmetSUpisimaPoId(Integer predmetId) {
+        return predmetRepozitorij.vratiPredmetSUpisimaPoId(predmetId);
+    }
 }
